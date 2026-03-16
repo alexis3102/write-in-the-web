@@ -1,15 +1,13 @@
-
 import json
 from os import path
 from typing import Annotated
 from fastapi import FastAPI, Path
 from pydantic import BaseModel
 
+from schema.text import info
+
 app = FastAPI()
 
-class info(BaseModel):
-    title: str
-    text: str
 
 @app.post("/escritura/{id_Escritura}")
 async def write (Info: info, id_Escritura:Annotated[int,Path(gt=0, lt=100)]):
