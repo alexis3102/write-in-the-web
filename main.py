@@ -4,9 +4,11 @@ from typing import Annotated
 from fastapi import FastAPI, Path
 from pydantic import BaseModel
 import random
+from sqlmodel import Session
 
 from schema.text import info
 from schema.user import user_schema
+from model.user_mod import engine, user_model
 
 app = FastAPI()
 
@@ -26,20 +28,16 @@ async def write (Info: info, id_Escritura:Annotated[int,Path(gt=0, lt=100)]):
     }
 
 @app.post("/user/")
-async def users (USER_POINT: user_schema):
-    user_data = USER_POINT.dict()
+def create_user(user: user_schema):
+    with Session(engine) as session:
+        db_user = user_model(
+            NAME=user.NAME,
+            PASSWORD=user.PASSWORD,
+            MAIL=user.MAIL
+        )
 
-    ID_user = []
+        session.add(db_user)
+        session.commit()
+        session.refresh(db_user)
 
-    for V in range(5):
-        numeros_random = random.randint(1, 10)
-        ID_user.append(numeros_random)
-
-    user_data["id_user"] = ID_user
-
-    with open ("user.json", "w") as archivo:
-        json.dump(user_data, archivo, indent=4)
-    
-    return {
-        "your info:" : user_data
-    }
+        return db_user

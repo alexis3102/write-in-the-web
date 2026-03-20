@@ -6,4 +6,10 @@ class user_model(SQLModel, table=True):
     NAME: str
     PASSWORD: str
     MAIL: str
-    
+
+sqlite_file_name = "user.db"
+sqlite_url = f"sqlite:///{sqlite_file_name}"
+
+engine = create_engine(sqlite_url, echo=True)
+
+SQLModel.metadata.create_all(engine)
