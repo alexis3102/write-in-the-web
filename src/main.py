@@ -7,27 +7,29 @@ from pydantic import BaseModel
 import random
 from sqlmodel import Session
 
-# main.py
-from .schema.text import info
+
+from .schema.text import write_schema
 from .schema.user import user_schema
 from .model.user_mod import engine, user_model
+from .model.text_mod import engine_text, text_model
 
 app = FastAPI()
 
 
-@app.post("/escritura/{id_Escritura}")
-async def write (Info: info, id_Escritura:Annotated[int,Path(gt=0, lt=100)]):
-    data = Info.dict()
+@app.post("/write/")
+def write (write: write_schema):
+    with Session(engine_text) as pueblito:
+        db_text = text_model (
+            title=write.title,
+            text=write.text
+        )
 
-    data["id"] = id_Escritura
+        pueblito.add(db_text)
+        pueblito.commit()
+        pueblito.refresh(db_text)
 
-    with open("text.json", "w") as archivo:
-        json.dump(data, archivo, indent=4)
+        return db_text
 
-    return {
-        "id": id_Escritura,
-        "data": data
-    }
 
 @app.post("/user/")
 def create_user(user: user_schema):
