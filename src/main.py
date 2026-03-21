@@ -1,4 +1,3 @@
-# main.py (dentro de src)
 import json
 from os import path
 from typing import Annotated
