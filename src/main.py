@@ -1,3 +1,4 @@
+# main.py (dentro de src)
 import json
 from os import path
 from typing import Annotated
@@ -6,9 +7,10 @@ from pydantic import BaseModel
 import random
 from sqlmodel import Session
 
-from schema.text import info
-from schema.user import user_schema
-from model.user_mod import engine, user_model
+# main.py
+from .schema.text import info
+from .schema.user import user_schema
+from .model.user_mod import engine, user_model
 
 app = FastAPI()
 
