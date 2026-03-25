@@ -3,49 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>write</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Register</title>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+
     <section id="fondo">
-        <img src="img/register.png" id="login">
+        <img src="img/register.png" id="bg-image">
     </section>
 
     <section id="login">
         <div id="elementos-register">
             <img src="img/perfil.png" id="img-perfil">
             <h1 id="title-register">REGISTER</h1>
+
             <div id="caja-semitrasparente">
-                <div id="formulario">
-                    <div id="name">
-                        <p id="name">
-                            <label for="">NAME</label>
-                            <input type="text">
-                        </p>
-                        <img src="img/name.png" id="img-name">
+                
+                <!-- 🔥 FORM CORRECTO -->
+                <form action="http://127.0.0.1:8000/user/" method="POST">
+
+                    <div class="campo">
+                        <label>NAME</label>
+                        <input type="text" name="NAME" placeholder="Usuario" required>
+                        <img src="img/name.png" class="icono">
                     </div>
                     
-                    <div id="password">
-                        <p id="password">
-                            <label for="">PASSWORD</label>
-                            <input type="text">
-                        </p>
-                        <img src="img/password.png" id="img-password">
+                    <div class="campo">
+                        <label>PASSWORD</label>
+                        <input type="password" name="PASSWORD" placeholder="Contraseña" required>
+                        <img src="img/password.png" class="icono">
                     </div>
 
-                    <div id="email">
-                        <p id="email">
-                            <label for="">EMAIL</label>
-                            <input type="text">
-                        </p>
-                        <img src="img/email.png" id="img-email" >
+                    <div class="campo">
+                        <label>EMAIL</label>
+                        <input type="email" name="MAIL" placeholder="Correo" required>
+                        <img src="img/email.png" class="icono">
                     </div>
 
-                </div>
+                    <button type="submit">Registrarse</button>
+
+                </form>
+                <!-- 🔥 FIN FORM -->
+
             </div>
-            
         </div>
-        
     </section>
+
 </body>
 </html>

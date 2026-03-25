@@ -10,4 +10,8 @@ sqlite_text_url = f"sqlite:///{sqlite_text_name}"
 
 engine_text = create_engine(sqlite_text_url, echo=True)
 
-SQLModel.metadata.create_all(engine_text)
+def create_db_text():
+    SQLModel.metadata.create_all(engine_text)
+
+if __name__ == "__main__":
+    create_db_text()
