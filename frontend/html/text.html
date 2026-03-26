@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forjar Escrito - Zona de Escritura</title>
+    <link rel="stylesheet" href="../css/text.css">
+</head>
+<body>
+    <div class="writer-container">
+ 
+        <!-- Margen estilo cuaderno -->
+        <div class="page-margin"></div>
+ 
+        <header>
+            <h1>Nueva Crónica</h1>
+            <span class="header-sub">Forjar Escrito · Archivo de Memorias</span>
+            <div class="ornament-line">
+                <span></span>
+                <i>❧</i>
+                <span></span>
+            </div>
+        </header>
+ 
+        <main>
+            <form id="writeForm">
+ 
+                <div class="input-group">
+                    <label for="title">Título de la obra</label>
+                    <input
+                        type="text"
+                        id="title"
+                        placeholder="El nombre que guardará la historia..."
+                        required
+                        autocomplete="off"
+                    >
+                </div>
+ 
+                <div class="input-group">
+                    <label for="text">Relato</label>
+                    <div class="textarea-wrapper">
+                        <textarea
+                            id="text"
+                            placeholder="Comienza a relatar tu historia aquí..."
+                            required
+                        ></textarea>
+                    </div>
+                    <div class="word-count" id="wordCount">0 palabras</div>
+                </div>
+ 
+                <div class="actions">
+                    <button type="submit" class="btn-submit">
+                        <span>Guardar en los Registros</span>
+                    </button>
+                </div>
+ 
+                <div id="statusMessage" class="status-message"></div>
+            </form>
+        </main>
+    </div>
+ 
+    <script src="../js/text.js"></script>
+</body>
+</html>

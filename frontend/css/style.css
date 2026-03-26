@@ -1,0 +1,149 @@
+/* --- Reset y Tipografía --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    justify-content: flex-end; /* Empuja el panel oscuro hacia la derecha */
+    font-family: "Times New Roman", Times, serif; /* Fuente elegante similar al diseño */
+}
+
+/* --- Fondo a pantalla completa --- */
+#fondo {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+}
+
+#bg-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* --- Panel lateral oscuro --- */
+#login {
+    width: 38%; /* Ocupa la parte derecha de la pantalla */
+    min-width: 380px;
+    height: 100%;
+    background-color: rgba(20, 15, 10, 0.75); /* Tono oscuro semitransparente */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#elementos-register {
+    width: 70%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* --- Cabecera del formulario --- */
+#img-perfil {
+    width: 60px;
+    margin-bottom: 15px;
+    /* filter: invert(1); Activa esto si tu img/perfil.png es negra para volverla blanca */
+}
+
+#title-register {
+    color: white;
+    font-size: 26px;
+    font-weight: normal;
+    letter-spacing: 2px;
+    margin-bottom: 40px;
+    border-bottom: 1px solid white;
+    padding-bottom: 10px;
+}
+
+/* --- Formulario y Contenedores --- */
+#caja-semitrasparente {
+    width: 100%;
+}
+
+#register-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* --- Cajas de Input (Campos) --- */
+.campo {
+    display: flex;
+    align-items: center;
+    border: 1px solid white;
+    height: 50px;
+}
+
+.campo .icono {
+    width: 20px;
+    margin: 0 15px;
+    /* filter: invert(1); Activa esto si tus iconos son negros para que se vean blancos */
+}
+
+.campo input {
+    flex: 1; /* Toma todo el espacio restante */
+    height: 100%;
+    background: transparent;
+    border: none;
+    border-left: 1px solid white; /* Línea divisoria entre el icono y el texto */
+    color: white;
+    padding: 0 15px;
+    font-size: 14px;
+    font-family: inherit;
+    outline: none;
+}
+
+.campo input::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+    letter-spacing: 1px;
+}
+
+/* --- Botón Create Account --- */
+button[type="submit"] {
+    background: transparent;
+    border: 1px solid white;
+    color: white;
+    padding: 15px 0;
+    font-size: 14px;
+    font-family: inherit;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    margin-top: 10px;
+}
+
+button[type="submit"]:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* --- Iconos Sociales (Redes) --- */
+.social-icons {
+    display: flex;
+    justify-content: center;
+    gap: 25px;
+    margin-top: 30px;
+}
+
+.social-icons img {
+    width: 45px;
+    height: 45px;
+    cursor: pointer;
+    border-radius: 50%; /* Hace el borde redondo */
+    border: 1px solid white;
+    padding: 8px; /* Da espacio entre el borde y el icono */
+    transition: background 0.3s ease;
+}
+
+.social-icons img:hover {
+    background: rgba(255, 255, 255, 0.2);
+}

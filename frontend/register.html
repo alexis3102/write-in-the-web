@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <section id="fondo">
+        <img src="img/register.png" id="bg-image">
+    </section>
+
+    <section id="login">
+        <div id="elementos-register">
+            <img src="img/perfil.png" id="img-perfil">
+            <h1 id="title-register">REGISTER</h1>
+
+            <div id="caja-semitrasparente">
+
+                <!-- 🔥 FORM CORRECTO -->
+                <form id="register-form">
+
+                    <div class="campo">
+                        <img src="img/name.png" class="icono" alt="User Icon">
+                        <input type="text" name="username" placeholder="NAME" required>
+                    </div>
+
+                    <div class="campo">
+                        <img src="img/password.png" class="icono" alt="Lock Icon">
+                        <input type="password" name="password" placeholder="PASSWORD" required>
+                    </div>
+
+                    <div class="campo">
+                        <img src="img/email.png" class="icono" alt="Email Icon">
+                        <input type="email" name="email" placeholder="EMAIL" required>
+                    </div>
+
+                    <button type="submit">CREATE ACCOUNT</button>
+
+                    <div class="social-icons">
+                        <img src="img/facebook.png" alt="Facebook">
+                        <img src="img/chrome.png" alt="Chrome">
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+    </section>
+    <script>
+        document.getElementById("register-form").addEventListener("submit", async function (e) {
+            e.preventDefault(); // 🚫 evita recargar la página
+
+            // 📦 obtener datos del form
+            const formData = new FormData(this);
+
+            const data = {
+                NAME: formData.get("username"),
+                PASSWORD: formData.get("password"),
+                MAIL: formData.get("email")
+            };
+
+            try {
+                const response = await fetch("http://127.0.0.1:8000/user/", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                console.log(result);
+
+                if (response.ok) {
+                    alert("Usuario registrado ✅");
+                } else {
+                    alert("Error: " + JSON.stringify(result));
+                }
+
+            } catch (error) {
+                console.error(error);
+                alert("Error de conexión ❌");
+            }
+        });
+    </script>
+</body>
+
+</html>
