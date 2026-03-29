@@ -3,209 +3,201 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Studio — Write & Characters</title>
+  <title>Escritorio — API Manager</title>
   <link rel="stylesheet" href="../css/write.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=JetBrains+Mono:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet" />
 </head>
 <body>
 
-  <!-- Ambient background -->
-  <div class="bg-layer">
-    <div class="bg-orb orb-1"></div>
-    <div class="bg-orb orb-2"></div>
-    <div class="bg-grid"></div>
-  </div>
+  <!-- Noise overlay -->
+  <div class="noise"></div>
 
-  <!-- Sidebar nav -->
-  <nav class="sidebar">
-    <div class="sidebar-brand">
-      <span class="brand-icon">◈</span>
-      <span class="brand-name">Studio</span>
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="brand">
+      <span class="brand-icon">✦</span>
+      <div>
+        <p class="brand-name">Escritorio</p>
+        <p class="brand-sub">API Manager</p>
+      </div>
     </div>
 
-    <div class="sidebar-tabs">
-      <button class="tab-btn active" data-tab="write">
-        <span class="tab-icon">✦</span>
-        <span>Escritura</span>
+    <nav class="nav">
+      <p class="nav-label">Textos</p>
+      <button class="nav-btn active" data-panel="write-text">
+        <span class="nav-icon">✍</span> Crear texto
       </button>
-      <button class="tab-btn" data-tab="chaterest">
-        <span class="tab-icon">◉</span>
-        <span>Personajes</span>
+      <button class="nav-btn" data-panel="search-text">
+        <span class="nav-icon">⌕</span> Buscar texto
       </button>
-    </div>
+
+      <p class="nav-label">Personajes</p>
+      <button class="nav-btn" data-panel="create-char">
+        <span class="nav-icon">◈</span> Crear personaje
+      </button>
+      <button class="nav-btn" data-panel="search-char">
+        <span class="nav-icon">⌕</span> Buscar personaje
+      </button>
+      <button class="nav-btn" data-panel="update-char">
+        <span class="nav-icon">⟳</span> Actualizar personaje
+      </button>
+      <button class="nav-btn" data-panel="delete-char">
+        <span class="nav-icon">⌫</span> Eliminar personaje
+      </button>
+    </nav>
 
     <div class="sidebar-footer">
-      <div class="status-dot"></div>
-      <span>API conectada</span>
+      <div class="status-dot" id="status-dot"></div>
+      <span id="status-text">Listo</span>
     </div>
-  </nav>
+  </aside>
 
   <!-- Main content -->
   <main class="main">
 
-    <!-- ─── WRITE SECTION ─── -->
-    <section id="tab-write" class="tab-section active">
-      <header class="section-header">
-        <div class="section-eyebrow">Módulo de escritura</div>
-        <h1 class="section-title">Textos <em>&amp; Archivos</em></h1>
-        <p class="section-sub">Crea, almacena y recupera textos desde la base de datos.</p>
-      </header>
+    <!-- Header -->
+    <header class="topbar">
+      <h1 class="topbar-title" id="panel-title">Crear texto</h1>
+      <div class="topbar-meta">
+        <span id="endpoint-badge" class="badge">POST /write/</span>
+      </div>
+    </header>
 
-      <div class="cards-grid">
-
-        <!-- Card: Crear texto -->
-        <div class="card">
-          <div class="card-tag">POST /write/</div>
-          <h2 class="card-title">Crear texto</h2>
-          <div class="form-group">
-            <label class="form-label">Título</label>
-            <input type="text" id="write-title" class="form-input" placeholder="Mi primer texto…" />
-          </div>
-          <div class="form-group">
-            <label class="form-label">Contenido</label>
-            <textarea id="write-text" class="form-textarea" placeholder="Escribe aquí tu texto…" rows="5"></textarea>
-          </div>
-          <button class="btn btn-primary" onclick="createWrite()">
-            <span class="btn-icon">↑</span> Guardar texto
-          </button>
-          <div id="write-response" class="response-box hidden"></div>
+    <!-- Panel: Crear texto -->
+    <section class="panel active" id="panel-write-text">
+      <div class="form-grid">
+        <div class="field">
+          <label>Título</label>
+          <input type="text" id="wt-title" placeholder="El nombre de tu obra…" />
         </div>
-
-        <!-- Card: Buscar texto -->
-        <div class="card">
-          <div class="card-tag">POST /search_write/</div>
-          <h2 class="card-title">Buscar texto</h2>
-          <div class="form-group">
-            <label class="form-label">Título a buscar</label>
-            <input type="text" id="search-title" class="form-input" placeholder="Nombre exacto del texto…" />
-          </div>
-          <button class="btn btn-secondary" onclick="searchWrite()">
-            <span class="btn-icon">⌕</span> Buscar
-          </button>
-          <div id="search-response" class="response-box hidden"></div>
-          <div id="search-result" class="result-card hidden">
-            <div class="result-label">Resultado</div>
-            <div class="result-title" id="result-title-display"></div>
-            <div class="result-body" id="result-text-display"></div>
-          </div>
+        <div class="field full">
+          <label>Texto</label>
+          <textarea id="wt-text" rows="10" placeholder="Escribe aquí tu historia, poema, relato…"></textarea>
         </div>
-
+        <div class="field full">
+          <button class="btn-primary" onclick="createText()">
+            <span>Publicar</span> <span class="btn-arrow">→</span>
+          </button>
+        </div>
       </div>
     </section>
 
-    <!-- ─── CHATEREST SECTION ─── -->
-    <section id="tab-chaterest" class="tab-section">
-      <header class="section-header">
-        <div class="section-eyebrow">Módulo de personajes</div>
-        <h1 class="section-title">Personajes <em>&amp; Historia</em></h1>
-        <p class="section-sub">Gestiona personajes: crea, busca, actualiza y elimina.</p>
-      </header>
-
-      <div class="cards-grid cards-grid--4">
-
-        <!-- Crear personaje -->
-        <div class="card">
-          <div class="card-tag">POST /chaterest/</div>
-          <h2 class="card-title">Nuevo personaje</h2>
-          <div class="form-group">
-            <label class="form-label">Nombre</label>
-            <input type="text" id="ch-name" class="form-input" placeholder="Nombre del personaje…" />
-          </div>
-          <div class="form-group">
-            <label class="form-label">Edad</label>
-            <input type="number" id="ch-age" class="form-input" placeholder="25" />
-          </div>
-          <div class="form-group">
-            <label class="form-label">Personalidad</label>
-            <input type="text" id="ch-personaly" class="form-input" placeholder="Valiente, curioso…" />
-          </div>
-          <div class="form-group">
-            <label class="form-label">Historia</label>
-            <textarea id="ch-history" class="form-textarea" rows="3" placeholder="Backstory del personaje…"></textarea>
-          </div>
-          <button class="btn btn-primary" onclick="createChaterest()">
-            <span class="btn-icon">+</span> Crear
-          </button>
-          <div id="ch-create-response" class="response-box hidden"></div>
+    <!-- Panel: Buscar texto -->
+    <section class="panel" id="panel-search-text">
+      <div class="form-grid">
+        <div class="field">
+          <label>Título</label>
+          <input type="text" id="st-title" placeholder="Nombre exacto del texto…" />
         </div>
-
-        <!-- Buscar personaje -->
-        <div class="card">
-          <div class="card-tag">POST /search_chaterest/</div>
-          <h2 class="card-title">Buscar personaje</h2>
-          <div class="form-group">
-            <label class="form-label">Nombre</label>
-            <input type="text" id="ch-search-name" class="form-input" placeholder="Nombre exacto…" />
-          </div>
-          <button class="btn btn-secondary" onclick="searchChaterest()">
-            <span class="btn-icon">⌕</span> Buscar
+        <div class="field">
+          <button class="btn-primary" onclick="searchText()">
+            <span>Buscar</span> <span class="btn-arrow">→</span>
           </button>
-          <div id="ch-search-response" class="response-box hidden"></div>
-          <div id="ch-result" class="result-card hidden">
-            <div class="result-label">Personaje encontrado</div>
-            <div class="char-display">
-              <div class="char-avatar" id="ch-avatar">?</div>
-              <div class="char-info">
-                <div class="char-name" id="ch-res-name">—</div>
-                <div class="char-age" id="ch-res-age">—</div>
-              </div>
-            </div>
-            <div class="char-tag-row">
-              <span class="char-tag" id="ch-res-personaly">—</span>
-            </div>
-            <div class="char-history" id="ch-res-history">—</div>
-          </div>
         </div>
-
-        <!-- Actualizar personaje -->
-        <div class="card">
-          <div class="card-tag">PUT /update_chaterest/</div>
-          <h2 class="card-title">Actualizar</h2>
-          <div class="form-group">
-            <label class="form-label">Nombre actual</label>
-            <input type="text" id="upd-name" class="form-input" placeholder="Nombre a actualizar…" />
-          </div>
-          <div class="divider-line"><span>Nuevos valores (opcionales)</span></div>
-          <div class="form-group">
-            <label class="form-label">Nuevo nombre</label>
-            <input type="text" id="upd-new-name" class="form-input" placeholder="—" />
-          </div>
-          <div class="form-group">
-            <label class="form-label">Nueva edad</label>
-            <input type="number" id="upd-new-age" class="form-input" placeholder="—" />
-          </div>
-          <div class="form-group">
-            <label class="form-label">Nueva personalidad</label>
-            <input type="text" id="upd-new-personaly" class="form-input" placeholder="—" />
-          </div>
-          <div class="form-group">
-            <label class="form-label">Nueva historia</label>
-            <textarea id="upd-new-history" class="form-textarea" rows="2" placeholder="—"></textarea>
-          </div>
-          <button class="btn btn-warning" onclick="updateChaterest()">
-            <span class="btn-icon">✎</span> Actualizar
-          </button>
-          <div id="upd-response" class="response-box hidden"></div>
-        </div>
-
-        <!-- Eliminar personaje -->
-        <div class="card card--danger">
-          <div class="card-tag card-tag--danger">DELETE /delete_chaterest/</div>
-          <h2 class="card-title">Eliminar personaje</h2>
-          <p class="card-desc">Esta acción no se puede deshacer. El personaje será borrado permanentemente de la base de datos.</p>
-          <div class="form-group">
-            <label class="form-label">Nombre exacto</label>
-            <input type="text" id="del-name" class="form-input form-input--danger" placeholder="Nombre del personaje…" />
-          </div>
-          <button class="btn btn-danger" onclick="deleteChaterest()">
-            <span class="btn-icon">⊗</span> Eliminar
-          </button>
-          <div id="del-response" class="response-box hidden"></div>
-        </div>
-
       </div>
     </section>
+
+    <!-- Panel: Crear personaje -->
+    <section class="panel" id="panel-create-char">
+      <div class="form-grid">
+        <div class="field">
+          <label>Nombre</label>
+          <input type="text" id="cc-name" placeholder="Ej: Valentina Ríos" />
+        </div>
+        <div class="field">
+          <label>Edad</label>
+          <input type="number" id="cc-age" placeholder="Ej: 32" />
+        </div>
+        <div class="field full">
+          <label>Personalidad</label>
+          <input type="text" id="cc-personaly" placeholder="Describe su carácter y rasgos…" />
+        </div>
+        <div class="field full">
+          <label>Historia</label>
+          <textarea id="cc-history" rows="6" placeholder="El pasado, motivaciones y contexto del personaje…"></textarea>
+        </div>
+        <div class="field full">
+          <button class="btn-primary" onclick="createChar()">
+            <span>Crear personaje</span> <span class="btn-arrow">→</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Panel: Buscar personaje -->
+    <section class="panel" id="panel-search-char">
+      <div class="form-grid">
+        <div class="field">
+          <label>Nombre del personaje</label>
+          <input type="text" id="sc-name" placeholder="Nombre exacto…" />
+        </div>
+        <div class="field">
+          <button class="btn-primary" onclick="searchChar()">
+            <span>Buscar</span> <span class="btn-arrow">→</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Panel: Actualizar personaje -->
+    <section class="panel" id="panel-update-char">
+      <div class="form-grid">
+        <div class="field full">
+          <label>Nombre actual <span class="required">*requerido</span></label>
+          <input type="text" id="uc-name" placeholder="Nombre actual del personaje…" />
+        </div>
+        <div class="divider-label">Nuevos valores (dejar vacío para no cambiar)</div>
+        <div class="field">
+          <label>Nuevo nombre</label>
+          <input type="text" id="uc-new-name" placeholder="—" />
+        </div>
+        <div class="field">
+          <label>Nueva edad</label>
+          <input type="number" id="uc-new-age" placeholder="—" />
+        </div>
+        <div class="field full">
+          <label>Nueva personalidad</label>
+          <input type="text" id="uc-new-personaly" placeholder="—" />
+        </div>
+        <div class="field full">
+          <label>Nueva historia</label>
+          <textarea id="uc-new-history" rows="5" placeholder="—"></textarea>
+        </div>
+        <div class="field full">
+          <button class="btn-primary" onclick="updateChar()">
+            <span>Guardar cambios</span> <span class="btn-arrow">→</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Panel: Eliminar personaje -->
+    <section class="panel" id="panel-delete-char">
+      <div class="form-grid">
+        <div class="field">
+          <label>Nombre del personaje</label>
+          <input type="text" id="dc-name" placeholder="Nombre exacto a eliminar…" />
+        </div>
+        <div class="field">
+          <button class="btn-danger" onclick="deleteChar()">
+            <span>Eliminar</span> <span class="btn-arrow">→</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Response area -->
+    <div class="response-container" id="response-box" style="display:none;">
+      <div class="response-header">
+        <span class="response-label">Respuesta</span>
+        <button class="response-close" onclick="closeResponse()">✕</button>
+      </div>
+      <pre class="response-body" id="response-body"></pre>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
 
   </main>
 
