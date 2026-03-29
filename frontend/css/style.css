@@ -147,3 +147,11 @@ button[type="submit"]:hover {
 .social-icons img:hover {
     background: rgba(255, 255, 255, 0.2);
 }
+        /* Estilos extra específicos del login */
+        #register-link {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 13px;
+            letter-spacing: 0.5px;
+            margin-top: 10px;
+        }

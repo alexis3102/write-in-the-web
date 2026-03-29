@@ -1,17 +1,14 @@
-import json
 from os import path
 from typing import Annotated
 from fastapi import FastAPI, Path
 from pydantic import BaseModel
-import random
-from sqlmodel import Session
+from sqlmodel import Session, select, col
 
-
+from .schema.login import login_schema
 from .schema.text import write_schema
 from .schema.user import user_schema
 from .model.user_mod import engine, user_model
 from .model.text_mod import engine_text, text_model
-from .schema.chaterest import chateres_schema
 
 app = FastAPI()
 
@@ -46,6 +43,29 @@ def create_user(user: user_schema):
 
         return db_user
 
+@app.post("/login/")
+def login(login_user: login_schema):
+    with Session(engine) as session:
+        # 1. Buscamos UN registro que coincida en AMBAS cosas exactamente
+        statement = select(user_model).where(
+            user_model.NAME == login_user.NAME,
+            user_model.PASSWORD == login_user.PASSWORD
+        )
+        
+        # 2. .first() nos da el primer usuario encontrado o None si no hay ninguno
+        user = session.exec(statement).first()
+
+        # 3. Validamos
+        if not user:
+            return {"status": "error", "message": "Credenciales incorrectas"}
+        
+        return {"status": "success", "message": f"Bienvenido {user.NAME}", "user_id": user.ID}
+
+
+
+
+
+
 
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -56,3 +76,4 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
