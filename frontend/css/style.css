@@ -155,3 +155,25 @@ button[type="submit"]:hover {
             letter-spacing: 0.5px;
             margin-top: 10px;
         }
+
+    /* Estilo para el texto del párrafo */
+#register-link {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.6); /* Color del texto normal */
+    font-size: 13px;
+    letter-spacing: 0.5px;
+    margin-top: 10px;
+}
+
+/* Estilo específico para el enlace <a> */
+#register-link a {
+    color: white; /* Esto quita el morado y lo pone blanco */
+    text-decoration: none; /* Opcional: quita el subrayado si no lo quieres */
+    font-weight: bold;
+}
+
+/* Estilo cuando pasas el mouse (opcional) */
+#register-link a:hover {
+    text-decoration: underline;
+    color: rgba(255, 255, 255, 0.8);
+}

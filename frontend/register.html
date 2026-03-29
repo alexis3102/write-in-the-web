@@ -80,7 +80,8 @@
                 console.log(result);
 
                 if (response.ok) {
-                    alert("Usuario registrado ✅");
+                window.location.href = "html/write.html";
+
                 } else {
                     alert("Error: " + JSON.stringify(result));
                 }

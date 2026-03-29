@@ -1,0 +1,203 @@
+:root {
+    --bg-main: #0a0a0a;
+    --bg-panel: #141414;
+    --bg-input: #1f1f1f;
+    --text-primary: #e0e0e0;
+    --text-secondary: #9e9e9e;
+    --accent: #3b82f6;
+    --accent-hover: #2563eb;
+    --border-color: #333333;
+    --font-family: 'Segoe UI', system-ui, sans-serif;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: var(--bg-main);
+    color: var(--text-primary);
+    font-family: var(--font-family);
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* Área Principal */
+.write-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 2rem 4rem;
+    transition: margin-right 0.3s ease;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 1rem;
+}
+
+h1 {
+    font-size: 1.5rem;
+    font-weight: 400;
+    color: var(--text-secondary);
+}
+
+#write-form {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: 1rem;
+}
+
+#write-title {
+    background: transparent;
+    border: none;
+    color: var(--text-primary);
+    font-size: 2rem;
+    font-weight: 600;
+    outline: none;
+}
+
+#write-text {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: var(--text-primary);
+    font-size: 1.1rem;
+    line-height: 1.6;
+    resize: none;
+    outline: none;
+    font-family: var(--font-family);
+}
+
+::placeholder {
+    color: #555555;
+}
+
+/* Botones */
+button {
+    cursor: pointer;
+    font-family: var(--font-family);
+    transition: all 0.2s ease;
+}
+
+.primary-btn {
+    background-color: var(--accent);
+    color: white;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 4px;
+    font-size: 1rem;
+    align-self: flex-end;
+}
+
+.primary-btn:hover {
+    background-color: var(--accent-hover);
+}
+
+.secondary-btn {
+    background-color: transparent;
+    color: var(--text-primary);
+    border: 1px solid var(--accent);
+    padding: 0.8rem;
+    border-radius: 4px;
+    width: 100%;
+    margin-top: 1rem;
+}
+
+.secondary-btn:hover {
+    background-color: rgba(59, 130, 246, 0.1);
+}
+
+.icon-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem;
+    border-radius: 50%;
+}
+
+.icon-btn:hover {
+    background: var(--bg-input);
+    color: var(--text-primary);
+}
+
+/* Panel Lateral (Chaterest) */
+.side-panel {
+    position: fixed;
+    top: 0;
+    right: -400px; /* Oculto por defecto */
+    width: 400px;
+    height: 100vh;
+    background-color: var(--bg-panel);
+    border-left: 1px solid var(--border-color);
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: -5px 0 15px rgba(0,0,0,0.5);
+    z-index: 10;
+    overflow-y: auto;
+}
+
+.side-panel.open {
+    right: 0;
+}
+
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.panel-header h2 {
+    font-size: 1.2rem;
+    font-weight: 500;
+}
+
+/* Formularios Panel */
+.input-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1.2rem;
+}
+
+.input-group label {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.input-group input, 
+.input-group textarea {
+    background-color: var(--bg-input);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    padding: 0.8rem;
+    border-radius: 4px;
+    font-family: var(--font-family);
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.input-group input:focus, 
+.input-group textarea:focus {
+    border-color: var(--accent);
+}
+
+.input-group textarea {
+    resize: vertical;
+}
