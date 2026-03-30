@@ -80,7 +80,10 @@
                 console.log(result);
 
                 if (response.ok) {
-                window.location.href = "html/write.html";
+                    localStorage.setItem("user_id", result.ID);
+                    localStorage.setItem("user_name", "Bienvenido " + result.NAME);
+                    window.location.href = "html/write.html";
+
 
                 } else {
                     alert("Error: " + JSON.stringify(result));

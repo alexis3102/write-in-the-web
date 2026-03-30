@@ -73,6 +73,8 @@
                 console.log(result);
 
                 if (result.status === "success") {
+                    localStorage.setItem("user_id", result.user_id);
+                    localStorage.setItem("user_name", result.message);
                     window.location.href = "write.html";
 
                 } else {
@@ -109,7 +111,7 @@
         }
 
         #login-form button[type="submit"] {
-        width: 100%;
+            width: 100%;
         }
     </style>
 
