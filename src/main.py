@@ -5,6 +5,7 @@ from sqlmodel import Session, select
 from .model.user_mod import engine, user_model
 from .model.text_mod import text_model
 from .model.chaterest_mod import chaterest_model
+from .model.place_mod import place_model, search_place_schema
 from .model import create_all_tables
 
 from .schema.text import write_schema, write_search_schema
@@ -14,6 +15,9 @@ from .schema.chaterest import (
 )
 from .schema.login import login_schema
 from .schema.user import user_schema
+from .schema.place import (
+    place_schema, place_search_schema, update_place_schama, place_delete_schema
+    )
 
 # Crea todas las tablas al iniciar
 create_all_tables()
@@ -155,5 +159,84 @@ def delete_chaterest(data: delete_chaterest_schema):
             return {"status": "error", "message": "No encontrado o no te pertenece"}
 
         session.delete(personaje)
+        session.commit()
+        return {"status": "ok", "message": f"'{data.name}' eliminado"}
+
+# ── place ───────────────────────────────────────────────────
+
+@app.post("/place/")
+def create_place(place: place_schema):
+    with Session(engine) as session:
+        db_pl = place_model(
+            name= place.name,
+            description= place.description,
+            danger= place.danger,
+            population= place.population,
+            resources= place.resources,
+            user_id= place.user_id
+        )
+
+        session.add(db_pl)
+        session.commit()
+        session.refresh(db_pl)
+        return db_pl
+
+@app.post("/search_place/")
+def search_place(data: place_search_schema):
+    with Session(engine) as session:
+        search = select(place_model).where(
+            place_model.name == data.name,
+            place_model.user_id == data.user_id
+        )
+
+        resultado = session.exec(search).first()
+        if not resultado:
+            return {"status": "error", "message": "No existe o no te pertenece"}
+        return {"status": "ok", "data": {
+            "name": resultado.name, "description": resultado.description,
+             "danger": resultado.danger, "population": resultado.population,
+             "resource": resultado.resources
+        }}
+
+@app.put("/update_place/")
+def update_place(data: update_place_schama):
+    with Session(engine) as session:
+        search = select(place_model).where(
+            place_model.name == data.name,
+            place_model.user_id == data.user_id
+        )
+        place = session.exec(search).first()
+        if not place:
+            return {"status": "error", "message": "No encontrado o no te pertenece"}
+        
+        if data.name_new is not None:
+            place.name = data.name_new
+        if data.description_new is not None:
+            place.description = data.description_new
+        if data.danger_new is not None:
+            place.danger = data.danger_new
+        if data.population_new is not None:
+            place.population = data.population_new
+        if data.resources_new is not None:
+            place.resources = data.resources_new
+        if data.resources_new is not None:
+            place.resources = data.resources_new
+        
+        session.add(place)
+        session.commit()
+        return {"status": "ok", "message": "place update"}
+    
+@app.delete("/delete_place/")
+def delete_place(data:place_delete_schema):
+    with Session(engine) as session:
+        search = select(place_model).where(
+            place_model.name == data.name,
+            place_model.user_id == data.user_id
+        )
+        place = session.exec(search).first()
+        if not place:
+            return {"status": "error", "message": "No encontrado o no te pertenece"}
+        
+        session.delete(place)
         session.commit()
         return {"status": "ok", "message": f"'{data.name}' eliminado"}
