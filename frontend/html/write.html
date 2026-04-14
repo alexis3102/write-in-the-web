@@ -10,10 +10,8 @@
 </head>
 <body>
 
-  <!-- Noise overlay -->
   <div class="noise"></div>
 
-  <!-- Sidebar -->
   <aside class="sidebar">
     <div class="brand">
       <span class="brand-icon">✦</span>
@@ -45,9 +43,22 @@
       <button class="nav-btn" data-panel="delete-char">
         <span class="nav-icon">⌫</span> Eliminar personaje
       </button>
+
+      <p class="nav-label">Lugares</p>
+      <button class="nav-btn" data-panel="create-place">
+        <span class="nav-icon">◎</span> Crear lugar
+      </button>
+      <button class="nav-btn" data-panel="search-place">
+        <span class="nav-icon">⌕</span> Buscar lugar
+      </button>
+      <button class="nav-btn" data-panel="update-place">
+        <span class="nav-icon">⟳</span> Actualizar lugar
+      </button>
+      <button class="nav-btn" data-panel="delete-place">
+        <span class="nav-icon">⌫</span> Eliminar lugar
+      </button>
     </nav>
 
-    <!-- Usuario activo + logout -->
     <div class="user-section">
       <div class="user-info">
         <span class="user-avatar">◉</span>
@@ -62,10 +73,8 @@
     </div>
   </aside>
 
-  <!-- Main content -->
   <main class="main">
 
-    <!-- Header -->
     <header class="topbar">
       <h1 class="topbar-title" id="panel-title">Crear texto</h1>
       <div class="topbar-meta">
@@ -73,7 +82,7 @@
       </div>
     </header>
 
-    <!-- Panel: Crear texto -->
+    <!-- ── TEXTOS ── -->
     <section class="panel active" id="panel-write-text">
       <div class="form-grid">
         <div class="field">
@@ -92,7 +101,6 @@
       </div>
     </section>
 
-    <!-- Panel: Buscar texto -->
     <section class="panel" id="panel-search-text">
       <div class="form-grid">
         <div class="field">
@@ -107,7 +115,7 @@
       </div>
     </section>
 
-    <!-- Panel: Crear personaje -->
+    <!-- ── PERSONAJES ── -->
     <section class="panel" id="panel-create-char">
       <div class="form-grid">
         <div class="field">
@@ -134,7 +142,6 @@
       </div>
     </section>
 
-    <!-- Panel: Buscar personaje -->
     <section class="panel" id="panel-search-char">
       <div class="form-grid">
         <div class="field">
@@ -149,7 +156,6 @@
       </div>
     </section>
 
-    <!-- Panel: Actualizar personaje -->
     <section class="panel" id="panel-update-char">
       <div class="form-grid">
         <div class="field full">
@@ -181,7 +187,6 @@
       </div>
     </section>
 
-    <!-- Panel: Eliminar personaje -->
     <section class="panel" id="panel-delete-char">
       <div class="form-grid">
         <div class="field">
@@ -190,6 +195,159 @@
         </div>
         <div class="field">
           <button class="btn-danger" onclick="deleteChar()">
+            <span>Eliminar</span> <span class="btn-arrow">→</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════
+         LUGARES
+    ══════════════════════════════════════ -->
+
+    <!-- Crear lugar (imagen integrada) -->
+    <section class="panel" id="panel-create-place">
+      <div class="form-grid">
+        <div class="field">
+          <label>Nombre del lugar</label>
+          <input type="text" id="cp-name" placeholder="Ej: Bosque de Niebla" />
+        </div>
+        <div class="field">
+          <label>Peligro <span class="required">1–10</span></label>
+          <input type="number" id="cp-danger" placeholder="Ej: 7" min="1" max="10" />
+        </div>
+        <div class="field">
+          <label>Población</label>
+          <input type="number" id="cp-population" placeholder="Ej: 3400" />
+        </div>
+        <div class="field">
+          <label>Recursos</label>
+          <input type="text" id="cp-resources" placeholder="Ej: madera, agua…" />
+        </div>
+        <div class="field full">
+          <label>Descripción</label>
+          <textarea id="cp-description" rows="4" placeholder="Historia, geografía, clima del lugar…"></textarea>
+        </div>
+
+        <!-- Dropzone -->
+        <div class="field full">
+          <label>Imagen <span class="required">opcional</span></label>
+          <div class="dropzone" id="cp-dropzone"
+               onclick="document.getElementById('cp-file').click()">
+            <div class="dropzone-inner" id="cp-dropzone-inner">
+              <span class="dropzone-icon">⬡</span>
+              <p class="dropzone-text">Arrastra una imagen aquí<br/>
+                <span>o haz clic para seleccionar</span>
+              </p>
+              <p class="dropzone-hint">JPG · PNG · WEBP · GIF</p>
+            </div>
+            <img id="cp-img-preview" class="img-preview" style="display:none;" alt="preview" />
+            <button class="dropzone-clear" id="cp-clear-btn" style="display:none;"
+                    onclick="clearFile(event, 'cp')">✕</button>
+          </div>
+          <input type="file" id="cp-file"
+                 accept="image/jpeg,image/png,image/webp,image/gif"
+                 style="display:none;"
+                 onchange="handleFileSelect(event, 'cp')" />
+        </div>
+
+        <div class="field full">
+          <button class="btn-primary" onclick="createPlace()">
+            <span>Crear lugar</span> <span class="btn-arrow">→</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Buscar lugar → tarjeta visual -->
+    <section class="panel" id="panel-search-place">
+      <div class="form-grid">
+        <div class="field">
+          <label>Nombre del lugar</label>
+          <input type="text" id="sp-name" placeholder="Nombre exacto…" />
+        </div>
+        <div class="field" style="align-self:flex-end;">
+          <button class="btn-primary" onclick="searchPlace()">
+            <span>Buscar</span> <span class="btn-arrow">→</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Tarjeta de resultado -->
+      <div class="place-card" id="place-card" style="display:none;">
+        <div class="place-card-img-wrap">
+          <img id="place-card-img" class="place-card-img" src="" alt="" style="display:none;" />
+          <div class="place-card-img-empty" id="place-card-img-empty">
+            <span class="no-img-icon">⬡</span>
+            <p>Sin imagen</p>
+          </div>
+        </div>
+        <div class="place-card-info">
+          <h2 class="place-card-name" id="place-card-name">—</h2>
+          <p class="place-card-desc" id="place-card-desc">—</p>
+          <div class="place-card-stats">
+            <div class="stat">
+              <span class="stat-label">Peligro</span>
+              <span class="stat-value" id="place-card-danger">—</span>
+            </div>
+            <div class="stat">
+              <span class="stat-label">Población</span>
+              <span class="stat-value" id="place-card-population">—</span>
+            </div>
+            <div class="stat">
+              <span class="stat-label">Recursos</span>
+              <span class="stat-value" id="place-card-resources">—</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Actualizar lugar -->
+    <section class="panel" id="panel-update-place">
+      <div class="form-grid">
+        <div class="field full">
+          <label>Nombre actual <span class="required">*requerido</span></label>
+          <input type="text" id="up-name" placeholder="Nombre actual del lugar…" />
+        </div>
+        <div class="divider-label">Nuevos valores (dejar vacío para no cambiar)</div>
+        <div class="field">
+          <label>Nuevo nombre</label>
+          <input type="text" id="up-name-new" placeholder="—" />
+        </div>
+        <div class="field">
+          <label>Nuevo peligro</label>
+          <input type="number" id="up-danger-new" placeholder="—" min="1" max="10" />
+        </div>
+        <div class="field">
+          <label>Nueva población</label>
+          <input type="number" id="up-population-new" placeholder="—" />
+        </div>
+        <div class="field">
+          <label>Nuevos recursos</label>
+          <input type="text" id="up-resources-new" placeholder="—" />
+        </div>
+        <div class="field full">
+          <label>Nueva descripción</label>
+          <textarea id="up-description-new" rows="5" placeholder="—"></textarea>
+        </div>
+        <div class="field full">
+          <button class="btn-primary" onclick="updatePlace()">
+            <span>Guardar cambios</span> <span class="btn-arrow">→</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Eliminar lugar -->
+    <section class="panel" id="panel-delete-place">
+      <div class="form-grid">
+        <div class="field">
+          <label>Nombre del lugar</label>
+          <input type="text" id="dp-name" placeholder="Nombre exacto a eliminar…" />
+        </div>
+        <div class="field" style="align-self:flex-end;">
+          <button class="btn-danger" onclick="deletePlace()">
             <span>Eliminar</span> <span class="btn-arrow">→</span>
           </button>
         </div>
@@ -205,7 +363,6 @@
       <pre class="response-body" id="response-body"></pre>
     </div>
 
-    <!-- Toast -->
     <div class="toast" id="toast"></div>
 
   </main>
