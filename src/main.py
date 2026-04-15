@@ -48,7 +48,7 @@ app.mount("/images", StaticFiles(directory=IMG_FOLDER), name="images")
 
 # ── USUARIOS ───────────────────────────────────────────────
 
-@app.post("/user/")
+@app.post("/user/", tags=['usuario'])
 def create_user(user: user_schema):
     with Session(engine) as session:
         db_user = user_model(
@@ -61,7 +61,7 @@ def create_user(user: user_schema):
         session.refresh(db_user)
         return db_user
 
-@app.post("/login/")
+@app.post("/login/", tags=['usuario'])
 def login(login_user: login_schema):
     name_admit = "ADMIT_2026"
     contraseña_admit = "123ABC" 
@@ -81,7 +81,7 @@ def login(login_user: login_schema):
 
 #── ADMIT ─────────────────────────────────────────────────────
 
-@app.get("/all_user_admit/")
+@app.get("/all_user_admit/", tags=['admit'])
 def all_user():
     with Session(engine) as asssion:
         querry = select(user_model)
@@ -90,7 +90,7 @@ def all_user():
             return {"status": "error", "message": "no hay usuarios"}
         return {"status": "success", "data": result}
 
-@app.post("/search_admit/")
+@app.post("/search_admit/", tags=['admit'])
 def search_user(data: search_admit_schema):
     with Session(engine) as session:
         query = select(user_model)
@@ -108,7 +108,7 @@ def search_user(data: search_admit_schema):
             "gmail": result.MAIL
         }}
     
-@app.put("/update_user/")
+@app.put("/update_user/", tags=['admit'])
 def update_user(data: updata_admit_schema):
     with Session(engine) as session:
         querry = select(user_model).where(
@@ -125,7 +125,7 @@ def update_user(data: updata_admit_schema):
         session.commit()
         return {"status": "ok", "message": "usuario actualizado"}
 
-@app.delete("/dalete_user/")
+@app.delete("/dalete_user/", tags=['admit'])
 def delete_user(data: delete_admit_schema):
     with Session(engine) as session:
         querry = select(user_model).where(
@@ -139,7 +139,7 @@ def delete_user(data: delete_admit_schema):
         return {"status": "ok", "message": f"'{data.ID}' eliminado"}
 # ── TEXTOS ─────────────────────────────────────────────────
 
-@app.post("/write/")
+@app.post("/write/", tags=['write'])
 def write(write: write_schema):
     with Session(engine) as session:
         db_text = text_model(
@@ -152,7 +152,7 @@ def write(write: write_schema):
         session.refresh(db_text)
         return db_text
 
-@app.post("/search_write/")
+@app.post("/search_write/", tags=['write'])
 def search_write(write2: write_search_schema):
     with Session(engine) as session:
         search = select(text_model).where(
@@ -164,7 +164,7 @@ def search_write(write2: write_search_schema):
             return {"status": "error", "message": "No existe o no te pertenece"}
         return {"status": "ok", "data": {"title": result.title, "text": result.text}}
 
-@app.post("/names_text/")
+@app.post("/names_text/", tags=['write'])
 def names_text(data: user_write_schema):
     with Session(engine) as session:
         query = select(text_model).where(
@@ -178,7 +178,7 @@ def names_text(data: user_write_schema):
 
 # ── PERSONAJES ─────────────────────────────────────────────
 
-@app.post("/chaterest/")
+@app.post("/chaterest/", tags=['chaterest'])
 def create_chaterest(chaterests: chaterest_schema):
     with Session(engine) as session:
         db_ch = chaterest_model(
@@ -193,7 +193,7 @@ def create_chaterest(chaterests: chaterest_schema):
         session.refresh(db_ch)
         return db_ch
 
-@app.post("/search_chaterest/")
+@app.post("/search_chaterest/", tags=['chaterest'])
 def search_chaterest(data: search_chaterest_schema):
     with Session(engine) as session:
         search = select(chaterest_model).where(
@@ -208,7 +208,7 @@ def search_chaterest(data: search_chaterest_schema):
             "personaly": res.personaly, "history": res.history
         }}
 
-@app.post("/names_chaterest/")
+@app.post("/names_chaterest/", tags=['chaterest'])
 def names_chaterest(data: user_chaterest_schema):
     with Session(engine) as session:
         query = select(chaterest_model).where(
@@ -219,7 +219,7 @@ def names_chaterest(data: user_chaterest_schema):
             return {"status": "error", "message": "No existen personajes"}
         return [item.name for item in results]
 
-@app.put("/update_chaterest/")
+@app.put("/update_chaterest/", tags=['chaterest'])
 def update_chaterest(data: update_chaterest_schema):
     with Session(engine) as session:
         search = select(chaterest_model).where(
@@ -239,7 +239,7 @@ def update_chaterest(data: update_chaterest_schema):
         session.commit()
         return {"status": "ok", "message": "Personaje actualizado"}
 
-@app.delete("/delete_chaterest/")
+@app.delete("/delete_chaterest/", tags=['chaterest'])
 def delete_chaterest(data: delete_chaterest_schema):
     with Session(engine) as session:
         search = select(chaterest_model).where(
@@ -256,7 +256,7 @@ def delete_chaterest(data: delete_chaterest_schema):
 
 # ── LUGARES ────────────────────────────────────────────────
 
-@app.post("/place/")
+@app.post("/place/", tags=['place'])
 async def create_place(
     name:        str        = Form(...),
     description: str        = Form(...),
@@ -305,7 +305,7 @@ async def create_place(
             }
         }
 
-@app.post("/search_place/")
+@app.post("/search_place/", tags=['place'])
 def search_place(data: place_search_schema):
     with Session(engine) as session:
         search = select(place_model).where(
@@ -331,7 +331,7 @@ def search_place(data: place_search_schema):
             }
         }
 
-@app.post("/names_place/")
+@app.post("/names_place/", tags=['place'])
 def names_place(data: place_name_schema):
     with Session(engine) as session:
         query = select(place_model).where(
@@ -342,7 +342,7 @@ def names_place(data: place_name_schema):
             return {"status": "error", "message": "No existen lugares"}
         return [item.name for item in results]
 
-@app.put("/update_place/")
+@app.put("/update_place/", tags=['place'])
 def update_place(data: update_place_schama):
     with Session(engine) as session:
         search = select(place_model).where(
@@ -363,7 +363,7 @@ def update_place(data: update_place_schama):
         session.commit()
         return {"status": "ok", "message": "Lugar actualizado"}
 
-@app.delete("/delete_place/")
+@app.delete("/delete_place/", tags=['place'])
 def delete_place(data: place_delete_schema):
     with Session(engine) as session:
         search = select(place_model).where(
