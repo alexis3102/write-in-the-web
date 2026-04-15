@@ -12,18 +12,19 @@ document.addEventListener("DOMContentLoaded", () => {
     const raw = localStorage.getItem("user_name") || "";
     nameEl.textContent = raw.replace("Bienvenido ", "").trim() || `#${USER_ID}`;
   }
+  initDropzone("cp");
 });
 
 /* ─── Panel metadata ────────────────────────────── */
 const PANELS = {
   "write-text":   { title: "Crear texto",         badge: "POST /write/" },
-  "search-text":  { title: "Buscar texto",         badge: "POST /search_write/" },
+  "search-text":  { title: "Buscar texto",         badge: "POST /search_write/",   names: "text" },
   "create-char":  { title: "Crear personaje",      badge: "POST /chaterest/" },
-  "search-char":  { title: "Buscar personaje",     badge: "POST /search_chaterest/" },
+  "search-char":  { title: "Buscar personaje",     badge: "POST /search_chaterest/", names: "char" },
   "update-char":  { title: "Actualizar personaje", badge: "PUT /update_chaterest/" },
   "delete-char":  { title: "Eliminar personaje",   badge: "DELETE /delete_chaterest/" },
   "create-place": { title: "Crear lugar",          badge: "POST /place/" },
-  "search-place": { title: "Buscar lugar",         badge: "POST /search_place/" },
+  "search-place": { title: "Buscar lugar",         badge: "POST /search_place/",   names: "place" },
   "update-place": { title: "Actualizar lugar",     badge: "PUT /update_place/" },
   "delete-place": { title: "Eliminar lugar",       badge: "DELETE /delete_place/" },
 };
@@ -36,11 +37,15 @@ document.querySelectorAll(".nav-btn").forEach(btn => {
     btn.classList.add("active");
     document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
     document.getElementById(`panel-${id}`).classList.add("active");
-    document.getElementById("panel-title").textContent = PANELS[id].title;
+    document.getElementById("panel-title").textContent  = PANELS[id].title;
     document.getElementById("endpoint-badge").textContent = PANELS[id].badge;
     closeResponse();
-    // Ocultar tarjeta de lugar al cambiar panel
     hidePlaceCard();
+    hideCharCard();
+    hideTextResult();
+
+    // Si el panel tiene lista lateral, cargarla automáticamente
+    if (PANELS[id].names) loadNames(PANELS[id].names);
   });
 });
 
@@ -51,13 +56,13 @@ function logout() {
   window.location.href = "../html/login.html";
 }
 
-/* ─── API helpers ───────────────────────────────── */
+/* ─── Status ────────────────────────────────────── */
 function setStatus(state, text) {
-  document.getElementById("status-dot").className = "status-dot " + state;
+  document.getElementById("status-dot").className  = "status-dot " + state;
   document.getElementById("status-text").textContent = text;
 }
 
-/* JSON normal */
+/* ─── API helpers ───────────────────────────────── */
 async function call(method, endpoint, body) {
   setStatus("loading", "Enviando…");
   try {
@@ -76,11 +81,9 @@ async function call(method, endpoint, body) {
   }
 }
 
-/* Multipart / form-data (para imágenes) */
 async function callForm(endpoint, formData) {
   setStatus("loading", "Enviando…");
   try {
-    // SIN Content-Type: el navegador pone el boundary correcto
     const res  = await fetch(API_BASE + endpoint, { method: "POST", body: formData });
     const data = await res.json();
     setStatus("ok", "OK " + res.status);
@@ -132,6 +135,94 @@ function required(val, fieldName) {
   return true;
 }
 
+/* ════════════════════════════════════════════════════════
+   LISTAS LATERALES DE NOMBRES
+   Tipo: 'text' | 'char' | 'place'
+════════════════════════════════════════════════════════ */
+
+/* Endpoints y callbacks por tipo */
+const NAMES_CONFIG = {
+  text: {
+    endpoint: "/names_text/",
+    listId:   "names-list-text",
+    inputId:  "st-title",
+    onSelect: () => searchText(),
+  },
+  char: {
+    endpoint: "/names_chaterest/",
+    listId:   "names-list-char",
+    inputId:  "sc-name",
+    onSelect: () => searchChar(),
+  },
+  place: {
+    endpoint: "/names_place/",
+    listId:   "names-list-place",
+    inputId:  "sp-name",
+    onSelect: () => searchPlace(),
+  },
+};
+
+async function loadNames(type) {
+  const cfg  = NAMES_CONFIG[type];
+  const list = document.getElementById(cfg.listId);
+
+  // Estado de carga
+  list.innerHTML = '<p class="names-empty names-loading">↻ Cargando…</p>';
+
+  try {
+    const res  = await fetch(API_BASE + cfg.endpoint, {
+      method:  "POST",
+      headers: { "Content-Type": "application/json" },
+      body:    JSON.stringify({ user_id: USER_ID }),
+    });
+    const data = await res.json();
+
+    // El backend devuelve array de strings, o {status:"error",...}
+    if (!Array.isArray(data)) {
+      list.innerHTML = '<p class="names-empty">Nada aquí todavía.</p>';
+      return;
+    }
+
+    renderNames(type, data);
+
+  } catch (err) {
+    list.innerHTML = '<p class="names-empty names-error">Sin conexión</p>';
+    console.error(err);
+  }
+}
+
+function renderNames(type, names) {
+  const cfg  = NAMES_CONFIG[type];
+  const list = document.getElementById(cfg.listId);
+
+  if (!names.length) {
+    list.innerHTML = '<p class="names-empty">Nada aquí todavía.</p>';
+    return;
+  }
+
+  list.innerHTML = names.map(name => `
+    <button class="name-item" onclick="selectName('${type}', ${JSON.stringify(name)})">
+      <span class="name-item-dot">·</span>
+      <span class="name-item-text">${name}</span>
+    </button>
+  `).join("");
+}
+
+function selectName(type, name) {
+  const cfg   = NAMES_CONFIG[type];
+  const input = document.getElementById(cfg.inputId);
+  if (!input) return;
+
+  // Rellenar el campo de búsqueda y resaltar el botón activo
+  input.value = name;
+  document.querySelectorAll(`#names-list-${type} .name-item`).forEach(btn => {
+    btn.classList.toggle("active", btn.querySelector(".name-item-text").textContent === name);
+  });
+
+  // Disparar la búsqueda automáticamente
+  cfg.onSelect();
+}
+
 /* ════════════════════════════════════════════════
    TEXTOS
 ════════════════════════════════════════════════ */
@@ -145,7 +236,42 @@ async function createText() {
 async function searchText() {
   const title = document.getElementById("st-title").value.trim();
   if (!required(title, "Título")) return;
-  await call("POST", "/search_write/", { title, user_id: USER_ID });
+
+  setStatus("loading", "Buscando…");
+  hideTextResult();
+
+  try {
+    const res  = await fetch(API_BASE + "/search_write/", {
+      method:  "POST",
+      headers: { "Content-Type": "application/json" },
+      body:    JSON.stringify({ title, user_id: USER_ID }),
+    });
+    const data = await res.json();
+    setStatus("ok", "OK " + res.status);
+
+    if (data.status === "error") {
+      showToast(data.message, "error");
+      setStatus("err", "Error");
+      return;
+    }
+
+    // Mostrar resultado inline (sin JSON crudo)
+    document.getElementById("text-result-title").textContent = data.data.title;
+    document.getElementById("text-result-body").textContent  = data.data.text;
+    const el = document.getElementById("text-result");
+    el.style.display = "block";
+    requestAnimationFrame(() => el.classList.add("visible"));
+    showToast("Texto encontrado ✦", "success");
+
+  } catch (err) {
+    setStatus("err", "Error");
+    showToast("No se pudo conectar con la API", "error");
+  }
+}
+
+function hideTextResult() {
+  const el = document.getElementById("text-result");
+  if (el) { el.classList.remove("visible"); el.style.display = "none"; }
 }
 
 /* ════════════════════════════════════════════════
@@ -166,16 +292,54 @@ async function createChar() {
 async function searchChar() {
   const name = document.getElementById("sc-name").value.trim();
   if (!required(name, "Nombre")) return;
-  await call("POST", "/search_chaterest/", { name, user_id: USER_ID });
+
+  setStatus("loading", "Buscando…");
+  hideCharCard();
+
+  try {
+    const res  = await fetch(API_BASE + "/search_chaterest/", {
+      method:  "POST",
+      headers: { "Content-Type": "application/json" },
+      body:    JSON.stringify({ name, user_id: USER_ID }),
+    });
+    const data = await res.json();
+    setStatus("ok", "OK " + res.status);
+
+    if (data.status === "error") {
+      showToast(data.message, "error");
+      setStatus("err", "Error");
+      return;
+    }
+
+    const d = data.data;
+    document.getElementById("char-card-name").textContent    = d.name;
+    document.getElementById("char-card-age").textContent     = `${d.age} años`;
+    document.getElementById("char-card-personaly").textContent = d.personaly;
+    document.getElementById("char-card-history").textContent = d.history;
+
+    const card = document.getElementById("char-card");
+    card.style.display = "block";
+    requestAnimationFrame(() => card.classList.add("visible"));
+    showToast("Personaje encontrado ✦", "success");
+
+  } catch (err) {
+    setStatus("err", "Error");
+    showToast("No se pudo conectar con la API", "error");
+  }
+}
+
+function hideCharCard() {
+  const el = document.getElementById("char-card");
+  if (el) { el.classList.remove("visible"); el.style.display = "none"; }
 }
 
 async function updateChar() {
-  const name        = document.getElementById("uc-name").value.trim();
-  const new_name    = document.getElementById("uc-new-name").value.trim()     || null;
-  const new_age_raw = document.getElementById("uc-new-age").value;
-  const new_age     = new_age_raw ? parseInt(new_age_raw)                     : null;
-  const new_per     = document.getElementById("uc-new-personaly").value.trim()|| null;
-  const new_hist    = document.getElementById("uc-new-history").value.trim()  || null;
+  const name     = document.getElementById("uc-name").value.trim();
+  const new_name = document.getElementById("uc-new-name").value.trim()      || null;
+  const age_raw  = document.getElementById("uc-new-age").value;
+  const new_age  = age_raw ? parseInt(age_raw)                               : null;
+  const new_per  = document.getElementById("uc-new-personaly").value.trim() || null;
+  const new_hist = document.getElementById("uc-new-history").value.trim()   || null;
   if (!required(name, "Nombre actual")) return;
   const body = { name, user_id: USER_ID };
   if (new_name) body.new_name      = new_name;
@@ -193,24 +357,14 @@ async function deleteChar() {
 }
 
 /* ════════════════════════════════════════════════
-   DROPZONE — reutilizable por prefijo de ID
+   DROPZONE
 ════════════════════════════════════════════════ */
-
-/* Mapa: prefijo → File seleccionado */
 const selectedFiles = {};
-
-/* Drag & drop para el dropzone del lugar */
-document.addEventListener("DOMContentLoaded", () => {
-  initDropzone("cp");   // prefijo del panel "crear lugar"
-});
 
 function initDropzone(prefix) {
   const dz = document.getElementById(`${prefix}-dropzone`);
   if (!dz) return;
-  dz.addEventListener("dragover", e => {
-    e.preventDefault();
-    dz.classList.add("drag-over");
-  });
+  dz.addEventListener("dragover",  e => { e.preventDefault(); dz.classList.add("drag-over"); });
   dz.addEventListener("dragleave", () => dz.classList.remove("drag-over"));
   dz.addEventListener("drop", e => {
     e.preventDefault();
@@ -232,33 +386,30 @@ function applyFile(file, prefix) {
     return;
   }
   selectedFiles[prefix] = file;
-
   const reader = new FileReader();
   reader.onload = e => {
-    document.getElementById(`${prefix}-img-preview`).src          = e.target.result;
-    document.getElementById(`${prefix}-img-preview`).style.display = "block";
+    document.getElementById(`${prefix}-img-preview`).src           = e.target.result;
+    document.getElementById(`${prefix}-img-preview`).style.display  = "block";
     document.getElementById(`${prefix}-dropzone-inner`).style.display = "none";
-    document.getElementById(`${prefix}-clear-btn`).style.display  = "flex";
+    document.getElementById(`${prefix}-clear-btn`).style.display    = "flex";
   };
   reader.readAsDataURL(file);
   showToast(`Imagen lista: ${file.name}`, "success");
 }
 
 function clearFile(event, prefix) {
-  event.stopPropagation();   // no abre el selector de archivos
+  event.stopPropagation();
   selectedFiles[prefix] = null;
-  document.getElementById(`${prefix}-img-preview`).src          = "";
-  document.getElementById(`${prefix}-img-preview`).style.display = "none";
+  document.getElementById(`${prefix}-img-preview`).src           = "";
+  document.getElementById(`${prefix}-img-preview`).style.display  = "none";
   document.getElementById(`${prefix}-dropzone-inner`).style.display = "flex";
-  document.getElementById(`${prefix}-clear-btn`).style.display  = "none";
+  document.getElementById(`${prefix}-clear-btn`).style.display    = "none";
   document.getElementById(`${prefix}-file`).value = "";
 }
 
 /* ════════════════════════════════════════════════
-   LUGARES — CRUD
+   LUGARES
 ════════════════════════════════════════════════ */
-
-/* ── Crear lugar (multipart: datos + imagen juntos) ── */
 async function createPlace() {
   const name        = document.getElementById("cp-name").value.trim();
   const danger      = document.getElementById("cp-danger").value;
@@ -277,8 +428,6 @@ async function createPlace() {
   fd.append("population",  parseInt(population));
   fd.append("resources",   resources);
   fd.append("user_id",     USER_ID);
-
-  /* La imagen es opcional: solo se adjunta si el usuario seleccionó una */
   const img = selectedFiles["cp"];
   if (img) fd.append("image", img);
 
@@ -288,9 +437,9 @@ async function createPlace() {
   if (data.status === "ok") {
     showToast(`Lugar "${name}" creado ✦`, "success");
     showResponse(data);
-    /* Limpiar formulario */
-    ["cp-name","cp-danger","cp-population","cp-resources"].forEach(id =>
-      document.getElementById(id).value = "");
+    ["cp-name","cp-danger","cp-population","cp-resources"].forEach(
+      id => document.getElementById(id).value = ""
+    );
     document.getElementById("cp-description").value = "";
     clearFile({ stopPropagation: () => {} }, "cp");
   } else {
@@ -299,7 +448,6 @@ async function createPlace() {
   }
 }
 
-/* ── Buscar lugar → tarjeta visual con imagen ── */
 async function searchPlace() {
   const name = document.getElementById("sp-name").value.trim();
   if (!required(name, "Nombre del lugar")) return;
@@ -322,7 +470,6 @@ async function searchPlace() {
       return;
     }
 
-    /* Rellenar tarjeta */
     const d = data.data;
     document.getElementById("place-card-name").textContent       = d.name;
     document.getElementById("place-card-desc").textContent       = d.description;
@@ -332,9 +479,8 @@ async function searchPlace() {
 
     const cardImg   = document.getElementById("place-card-img");
     const cardEmpty = document.getElementById("place-card-img-empty");
-
     if (d.image_url) {
-      cardImg.src          = API_BASE + d.image_url;
+      cardImg.src           = API_BASE + d.image_url;
       cardImg.style.display  = "block";
       cardEmpty.style.display = "none";
     } else {
@@ -342,7 +488,6 @@ async function searchPlace() {
       cardEmpty.style.display = "flex";
     }
 
-    /* Mostrar tarjeta con animación */
     const card = document.getElementById("place-card");
     card.style.display = "flex";
     requestAnimationFrame(() => card.classList.add("visible"));
@@ -351,42 +496,33 @@ async function searchPlace() {
   } catch (err) {
     setStatus("err", "Error");
     showToast("No se pudo conectar con la API", "error");
-    console.error(err);
   }
 }
 
 function hidePlaceCard() {
-  const card = document.getElementById("place-card");
-  if (card) {
-    card.classList.remove("visible");
-    card.style.display = "none";
-  }
+  const el = document.getElementById("place-card");
+  if (el) { el.classList.remove("visible"); el.style.display = "none"; }
 }
 
-/* ── Actualizar lugar ── */
 async function updatePlace() {
-  const name           = document.getElementById("up-name").value.trim();
-  const name_new       = document.getElementById("up-name-new").value.trim()      || null;
-  const danger_raw     = document.getElementById("up-danger-new").value;
-  const danger_new     = danger_raw    ? parseInt(danger_raw)                      : null;
-  const pop_raw        = document.getElementById("up-population-new").value;
-  const population_new = pop_raw       ? parseInt(pop_raw)                         : null;
-  const resources_new  = document.getElementById("up-resources-new").value.trim() || null;
-  const desc_new       = document.getElementById("up-description-new").value.trim()|| null;
-
+  const name       = document.getElementById("up-name").value.trim();
+  const name_new   = document.getElementById("up-name-new").value.trim()       || null;
+  const danger_raw = document.getElementById("up-danger-new").value;
+  const danger_new = danger_raw ? parseInt(danger_raw)                          : null;
+  const pop_raw    = document.getElementById("up-population-new").value;
+  const pop_new    = pop_raw    ? parseInt(pop_raw)                             : null;
+  const res_new    = document.getElementById("up-resources-new").value.trim()  || null;
+  const desc_new   = document.getElementById("up-description-new").value.trim()|| null;
   if (!required(name, "Nombre actual")) return;
-
   const body = { name, user_id: USER_ID };
-  if (name_new)       body.name_new        = name_new;
-  if (danger_new)     body.danger_new      = danger_new;
-  if (population_new) body.population_new  = population_new;
-  if (resources_new)  body.resources_new   = resources_new;
-  if (desc_new)       body.description_new = desc_new;
-
+  if (name_new)   body.name_new        = name_new;
+  if (danger_new) body.danger_new      = danger_new;
+  if (pop_new)    body.population_new  = pop_new;
+  if (res_new)    body.resources_new   = res_new;
+  if (desc_new)   body.description_new = desc_new;
   await call("PUT", "/update_place/", body);
 }
 
-/* ── Eliminar lugar ── */
 async function deletePlace() {
   const name = document.getElementById("dp-name").value.trim();
   if (!required(name, "Nombre del lugar")) return;

@@ -82,7 +82,10 @@
       </div>
     </header>
 
-    <!-- ── TEXTOS ── -->
+    <!-- ════════════════════════════════
+         TEXTOS
+    ════════════════════════════════ -->
+
     <section class="panel active" id="panel-write-text">
       <div class="form-grid">
         <div class="field">
@@ -101,21 +104,51 @@
       </div>
     </section>
 
+    <!-- Buscar texto — layout con lista lateral -->
     <section class="panel" id="panel-search-text">
-      <div class="form-grid">
-        <div class="field">
-          <label>Título</label>
-          <input type="text" id="st-title" placeholder="Nombre exacto del texto…" />
+      <div class="search-layout">
+
+        <!-- Lista lateral de nombres -->
+        <div class="names-panel">
+          <div class="names-panel-header">
+            <span class="names-panel-title">Mis textos</span>
+            <button class="names-refresh" onclick="loadNames('text')" title="Recargar">↻</button>
+          </div>
+          <div class="names-list" id="names-list-text">
+            <p class="names-empty">Cargando…</p>
+          </div>
         </div>
-        <div class="field">
-          <button class="btn-primary" onclick="searchText()">
-            <span>Buscar</span> <span class="btn-arrow">→</span>
-          </button>
+
+        <!-- Formulario + resultado -->
+        <div class="search-content">
+          <div class="form-grid">
+            <div class="field">
+              <label>Título</label>
+              <input type="text" id="st-title" placeholder="Nombre exacto del texto…" />
+            </div>
+            <div class="field" style="align-self:flex-end;">
+              <button class="btn-primary" onclick="searchText()">
+                <span>Buscar</span> <span class="btn-arrow">→</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Resultado texto -->
+          <div class="text-result" id="text-result" style="display:none;">
+            <div class="text-result-header">
+              <h2 class="text-result-title" id="text-result-title">—</h2>
+            </div>
+            <pre class="text-result-body" id="text-result-body">—</pre>
+          </div>
         </div>
+
       </div>
     </section>
 
-    <!-- ── PERSONAJES ── -->
+    <!-- ════════════════════════════════
+         PERSONAJES
+    ════════════════════════════════ -->
+
     <section class="panel" id="panel-create-char">
       <div class="form-grid">
         <div class="field">
@@ -142,17 +175,50 @@
       </div>
     </section>
 
+    <!-- Buscar personaje — layout con lista lateral -->
     <section class="panel" id="panel-search-char">
-      <div class="form-grid">
-        <div class="field">
-          <label>Nombre del personaje</label>
-          <input type="text" id="sc-name" placeholder="Nombre exacto…" />
+      <div class="search-layout">
+
+        <div class="names-panel">
+          <div class="names-panel-header">
+            <span class="names-panel-title">Mis personajes</span>
+            <button class="names-refresh" onclick="loadNames('char')" title="Recargar">↻</button>
+          </div>
+          <div class="names-list" id="names-list-char">
+            <p class="names-empty">Cargando…</p>
+          </div>
         </div>
-        <div class="field">
-          <button class="btn-primary" onclick="searchChar()">
-            <span>Buscar</span> <span class="btn-arrow">→</span>
-          </button>
+
+        <div class="search-content">
+          <div class="form-grid">
+            <div class="field">
+              <label>Nombre del personaje</label>
+              <input type="text" id="sc-name" placeholder="Nombre exacto…" />
+            </div>
+            <div class="field" style="align-self:flex-end;">
+              <button class="btn-primary" onclick="searchChar()">
+                <span>Buscar</span> <span class="btn-arrow">→</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Tarjeta personaje -->
+          <div class="char-card" id="char-card" style="display:none;">
+            <div class="char-card-header">
+              <h2 class="char-card-name" id="char-card-name">—</h2>
+              <span class="char-card-age" id="char-card-age">—</span>
+            </div>
+            <div class="char-card-row">
+              <span class="char-field-label">Personalidad</span>
+              <p class="char-field-value" id="char-card-personaly">—</p>
+            </div>
+            <div class="char-card-row">
+              <span class="char-field-label">Historia</span>
+              <p class="char-field-value" id="char-card-history">—</p>
+            </div>
+          </div>
         </div>
+
       </div>
     </section>
 
@@ -201,11 +267,11 @@
       </div>
     </section>
 
-    <!-- ══════════════════════════════════════
+    <!-- ════════════════════════════════
          LUGARES
-    ══════════════════════════════════════ -->
+    ════════════════════════════════ -->
 
-    <!-- Crear lugar (imagen integrada) -->
+    <!-- Crear lugar (con dropzone integrado) -->
     <section class="panel" id="panel-create-place">
       <div class="form-grid">
         <div class="field">
@@ -228,8 +294,6 @@
           <label>Descripción</label>
           <textarea id="cp-description" rows="4" placeholder="Historia, geografía, clima del lugar…"></textarea>
         </div>
-
-        <!-- Dropzone -->
         <div class="field full">
           <label>Imagen <span class="required">opcional</span></label>
           <div class="dropzone" id="cp-dropzone"
@@ -243,14 +307,13 @@
             </div>
             <img id="cp-img-preview" class="img-preview" style="display:none;" alt="preview" />
             <button class="dropzone-clear" id="cp-clear-btn" style="display:none;"
-                    onclick="clearFile(event, 'cp')">✕</button>
+                    onclick="clearFile(event,'cp')">✕</button>
           </div>
           <input type="file" id="cp-file"
                  accept="image/jpeg,image/png,image/webp,image/gif"
                  style="display:none;"
-                 onchange="handleFileSelect(event, 'cp')" />
+                 onchange="handleFileSelect(event,'cp')" />
         </div>
-
         <div class="field full">
           <button class="btn-primary" onclick="createPlace()">
             <span>Crear lugar</span> <span class="btn-arrow">→</span>
@@ -259,47 +322,63 @@
       </div>
     </section>
 
-    <!-- Buscar lugar → tarjeta visual -->
+    <!-- Buscar lugar — layout con lista lateral + tarjeta visual -->
     <section class="panel" id="panel-search-place">
-      <div class="form-grid">
-        <div class="field">
-          <label>Nombre del lugar</label>
-          <input type="text" id="sp-name" placeholder="Nombre exacto…" />
-        </div>
-        <div class="field" style="align-self:flex-end;">
-          <button class="btn-primary" onclick="searchPlace()">
-            <span>Buscar</span> <span class="btn-arrow">→</span>
-          </button>
-        </div>
-      </div>
+      <div class="search-layout">
 
-      <!-- Tarjeta de resultado -->
-      <div class="place-card" id="place-card" style="display:none;">
-        <div class="place-card-img-wrap">
-          <img id="place-card-img" class="place-card-img" src="" alt="" style="display:none;" />
-          <div class="place-card-img-empty" id="place-card-img-empty">
-            <span class="no-img-icon">⬡</span>
-            <p>Sin imagen</p>
+        <div class="names-panel">
+          <div class="names-panel-header">
+            <span class="names-panel-title">Mis lugares</span>
+            <button class="names-refresh" onclick="loadNames('place')" title="Recargar">↻</button>
+          </div>
+          <div class="names-list" id="names-list-place">
+            <p class="names-empty">Cargando…</p>
           </div>
         </div>
-        <div class="place-card-info">
-          <h2 class="place-card-name" id="place-card-name">—</h2>
-          <p class="place-card-desc" id="place-card-desc">—</p>
-          <div class="place-card-stats">
-            <div class="stat">
-              <span class="stat-label">Peligro</span>
-              <span class="stat-value" id="place-card-danger">—</span>
+
+        <div class="search-content">
+          <div class="form-grid">
+            <div class="field">
+              <label>Nombre del lugar</label>
+              <input type="text" id="sp-name" placeholder="Nombre exacto…" />
             </div>
-            <div class="stat">
-              <span class="stat-label">Población</span>
-              <span class="stat-value" id="place-card-population">—</span>
+            <div class="field" style="align-self:flex-end;">
+              <button class="btn-primary" onclick="searchPlace()">
+                <span>Buscar</span> <span class="btn-arrow">→</span>
+              </button>
             </div>
-            <div class="stat">
-              <span class="stat-label">Recursos</span>
-              <span class="stat-value" id="place-card-resources">—</span>
+          </div>
+
+          <!-- Tarjeta lugar -->
+          <div class="place-card" id="place-card" style="display:none;">
+            <div class="place-card-img-wrap">
+              <img id="place-card-img" class="place-card-img" src="" alt="" style="display:none;" />
+              <div class="place-card-img-empty" id="place-card-img-empty">
+                <span class="no-img-icon">⬡</span>
+                <p>Sin imagen</p>
+              </div>
+            </div>
+            <div class="place-card-info">
+              <h2 class="place-card-name" id="place-card-name">—</h2>
+              <p class="place-card-desc" id="place-card-desc">—</p>
+              <div class="place-card-stats">
+                <div class="stat">
+                  <span class="stat-label">Peligro</span>
+                  <span class="stat-value" id="place-card-danger">—</span>
+                </div>
+                <div class="stat">
+                  <span class="stat-label">Población</span>
+                  <span class="stat-value" id="place-card-population">—</span>
+                </div>
+                <div class="stat">
+                  <span class="stat-label">Recursos</span>
+                  <span class="stat-value" id="place-card-resources">—</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
+
       </div>
     </section>
 
