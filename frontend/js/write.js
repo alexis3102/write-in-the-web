@@ -13,6 +13,16 @@ document.addEventListener("DOMContentLoaded", () => {
     nameEl.textContent = raw.replace("Bienvenido ", "").trim() || `#${USER_ID}`;
   }
   initDropzone("cp");
+
+  // Contador de palabras del editor libre
+  const editorBody = document.getElementById("wt-text");
+  const wordCount  = document.getElementById("wt-wordcount");
+  if (editorBody && wordCount) {
+    editorBody.addEventListener("input", () => {
+      const words = editorBody.value.trim().split(/\s+/).filter(w => w.length > 0).length;
+      wordCount.textContent = `${words} ${words === 1 ? "palabra" : "palabras"}`;
+    });
+  }
 });
 
 /* ─── Panel metadata ────────────────────────────── */

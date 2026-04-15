@@ -87,17 +87,25 @@
     ════════════════════════════════ -->
 
     <section class="panel active" id="panel-write-text">
-      <div class="form-grid">
-        <div class="field">
-          <label>Título</label>
-          <input type="text" id="wt-title" placeholder="El nombre de tu obra…" />
-        </div>
-        <div class="field full">
-          <label>Texto</label>
-          <textarea id="wt-text" rows="10" placeholder="Escribe aquí tu historia, poema, relato…"></textarea>
-        </div>
-        <div class="field full">
-          <button class="btn-primary" onclick="createText()">
+      <div class="editor-wrap">
+        <input
+          type="text"
+          id="wt-title"
+          class="editor-title"
+          placeholder="El nombre de tu obra…"
+          autocomplete="off"
+          spellcheck="false"
+        />
+        <div class="editor-rule"></div>
+        <textarea
+          id="wt-text"
+          class="editor-body"
+          placeholder="Escribe aquí tu historia, poema, relato…"
+          spellcheck="false"
+        ></textarea>
+        <div class="editor-footer">
+          <span class="editor-wordcount" id="wt-wordcount">0 palabras</span>
+          <button class="btn-primary editor-publish" onclick="createText()">
             <span>Publicar</span> <span class="btn-arrow">→</span>
           </button>
         </div>
