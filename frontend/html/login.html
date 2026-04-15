@@ -77,6 +77,10 @@
                     localStorage.setItem("user_name", result.message);
                     window.location.href = "write.html";
 
+                } else if (result.status === "success_admit") {
+                    localStorage.setItem("admit_role", "admin");
+                    window.location.href = "admit.html";
+
                 } else {
                     alert("Error: " + result.message + " ❌");
                 }
