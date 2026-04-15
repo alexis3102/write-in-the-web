@@ -28,4 +28,5 @@ class place_delete_schema(SQLModel):
     name:    str
     user_id: int
 
-
+class place_name_schema(SQLModel):
+    user_id: int

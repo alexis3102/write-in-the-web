@@ -18,6 +18,9 @@ class delete_chaterest_schema(BaseModel):
     name: str
     user_id: int
 
+class user_chaterest_schema(BaseModel):
+    user_id: int
+
 # schema/chaterest.py
 from typing import Optional
 
