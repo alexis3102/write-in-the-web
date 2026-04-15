@@ -23,6 +23,9 @@ from .schema.place import (
     place_schema, place_search_schema, update_place_schama,
     place_delete_schema, place_name_schema
 )
+from .schema.admit import (
+    search_admit_schema,updata_admit_schema,delete_admit_schema
+)
 
 # Crea todas las tablas al iniciar
 create_all_tables()
@@ -60,17 +63,80 @@ def create_user(user: user_schema):
 
 @app.post("/login/")
 def login(login_user: login_schema):
+    name_admit = "ADMIT_2026"
+    contraseña_admit = "123ABC" 
     with Session(engine) as session:
         statement = select(user_model).where(
             user_model.NAME == login_user.NAME,
             user_model.PASSWORD == login_user.PASSWORD
         )
         user = session.exec(statement).first()
-        if not user:
+        if login_user.NAME == name_admit and login_user.PASSWORD == contraseña_admit:
+            return {"status": "success_admit"}
+        elif not user:
             return {"status": "error", "message": "Credenciales incorrectas"}
         return {"status": "success", "message": f"Bienvenido {user.NAME}", "user_id": user.ID}
+        
 
 
+#── ADMIT ─────────────────────────────────────────────────────
+
+@app.get("/all_user_admit/")
+def all_user():
+    with Session(engine) as asssion:
+        querry = select(user_model)
+        result = asssion.exec(querry).all()
+        if not result:
+            return {"status": "error", "message": "no hay usuarios"}
+        return {"status": "success", "data": result}
+
+@app.post("/search_admit/")
+def search_user(data: search_admit_schema):
+    with Session(engine) as session:
+        query = select(user_model)
+        if data.ID is not None:
+            query = query.where(user_model.ID == data.ID)
+        if data.NAME is not None:
+            query = query.where(user_model.NAME == data.NAME)
+        result = session.exec(query).first()
+        if not result:
+            return {"status": "error", "message": "No existe usuario"}
+        return {"status": "ok", "data": {
+            "id": result.ID,
+            "name": result.NAME,
+            "password": result.PASSWORD,
+            "gmail": result.MAIL
+        }}
+    
+@app.put("/update_user/")
+def update_user(data: updata_admit_schema):
+    with Session(engine) as session:
+        querry = select(user_model).where(
+            user_model.ID == data.ID
+        )
+        result = session.exec(querry).first()
+        if not result:
+            return{"status": "error", "message": "No existe usuario"}
+        if data.NEW_NAME is not None: result.NAME = data.NEW_NAME
+        if data.NEW_PASSWORD is not None: result.PASSWORD = data.NEW_PASSWORD
+        if data.NEW_MAIL is not None: result.MAIL = data.NEW_MAIL
+
+        session.add(result)
+        session.commit()
+        return {"status": "ok", "message": "usuario actualizado"}
+
+@app.delete("/dalete_user/")
+def delete_user(data: delete_admit_schema):
+    with Session(engine) as session:
+        querry = select(user_model).where(
+            user_model.ID == data.ID
+        )
+        result = session.exec(querry).first()
+        if not result:
+            return {"status": "error", "message": "No existe usuario"}
+        session.delete(result)
+        session.commit()
+        return {"status": "ok", "message": f"'{data.ID}' eliminado"}
 # ── TEXTOS ─────────────────────────────────────────────────
 
 @app.post("/write/")
@@ -314,3 +380,5 @@ def delete_place(data: place_delete_schema):
         session.delete(place)
         session.commit()
         return {"status": "ok", "message": f"'{data.name}' eliminado"}
+
+
