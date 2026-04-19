@@ -53,7 +53,6 @@
             e.preventDefault();
 
             const formData = new FormData(this);
-
             const data = {
                 NAME: formData.get("username"),
                 PASSWORD: formData.get("password")
@@ -62,27 +61,41 @@
             try {
                 const response = await fetch("http://127.0.0.1:8000/login/", {
                     method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
+                    headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(data)
                 });
 
                 const result = await response.json();
-
                 console.log(result);
 
-                if (result.status === "success") {
-                    localStorage.setItem("user_id", result.user_id);
-                    localStorage.setItem("user_name", result.message);
-                    window.location.href = "write.html";
+                // ── El servidor ahora devuelve { access_token, token_type, user_id, role }
+                //    en vez del antiguo { status, message, user_id }
+                if (result.access_token) {
 
-                } else if (result.status === "success_admit") {
-                    localStorage.setItem("admit_role", "admin");
-                    window.location.href = "admit.html";
+                    // Guardamos el token en localStorage
+                    // Todas las peticiones futuras lo enviarán en el header Authorization
+                    localStorage.setItem("access_token", result.access_token);
+
+                    if (result.role === "admin") {
+                        // Admin: guardamos su rol y redirigimos al panel
+                        localStorage.setItem("admit_role", "admin");
+                        // Limpiamos datos de usuario normal por si quedaron
+                        localStorage.removeItem("user_id");
+                        localStorage.removeItem("user_name");
+                        window.location.href = "admit.html";
+
+                    } else {
+                        // Usuario normal: guardamos su ID y nombre
+                        localStorage.setItem("user_id",   result.user_id);
+                        localStorage.setItem("user_name", "Bienvenido");
+                        // Limpiamos datos de admin por si quedaron
+                        localStorage.removeItem("admit_role");
+                        window.location.href = "write.html";
+                    }
 
                 } else {
-                    alert("Error: " + result.message + " ❌");
+                    // El servidor devolvió error (credenciales incorrectas → 401)
+                    alert("Credenciales incorrectas ❌");
                 }
 
             } catch (error) {
@@ -93,7 +106,6 @@
     </script>
 
     <style>
-        /* Estilos extra específicos del login */
         #register-link {
             text-align: center;
             color: rgba(255, 255, 255, 0.6);
@@ -110,15 +122,10 @@
             transition: border-color 0.3s ease;
         }
 
-        #register-link a:hover {
-            border-color: white;
-        }
+        #register-link a:hover { border-color: white; }
 
-        #login-form button[type="submit"] {
-            width: 100%;
-        }
+        #login-form button[type="submit"] { width: 100%; }
     </style>
 
 </body>
-
 </html>

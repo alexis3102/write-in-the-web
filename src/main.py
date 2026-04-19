@@ -1,10 +1,13 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlmodel import Session, select
 import os, shutil
 from uuid import uuid4
 from fastapi import UploadFile, File, Form
 from fastapi.staticfiles import StaticFiles
+
+from .sytem.jwt_auth import create_access_token, verify_token, is_admin_token
 
 from .model.user_mod import engine, user_model
 from .model.text_mod import text_model
@@ -26,6 +29,7 @@ from .schema.place import (
 from .schema.admit import (
     search_admit_schema,updata_admit_schema,delete_admit_schema
 )
+from .schema.token import token_schema 
 
 # Crea todas las tablas al iniciar
 create_all_tables()
@@ -39,6 +43,48 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# ── HTTPBearer: extrae el token del Header automáticamente ─────
+# Cuando un endpoint lo usa como dependencia, FastAPI lee el Header
+#   Authorization: Bearer <token>
+# y lo pasa como objeto HTTPAuthorizationCredentials.
+bearer_scheme = HTTPBearer()
+
+# ══════════════════════════════════════════════════════════════
+#  DEPENDENCIAS  (funciones que FastAPI inyecta en los endpoints)
+# ══════════════════════════════════════════════════════════════
+ 
+def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme)) -> dict:
+    """
+    Dependencia para endpoints que requieren usuario autenticado.
+    
+    FastAPI llama a esta función automáticamente cuando el endpoint
+    la declara en su firma con  Depends(get_current_user).
+    
+    Devuelve el payload del token si es válido.
+    Lanza 401 si no lo es.
+    """
+    token = credentials.credentials  # extrae solo el string del token
+    payload = verify_token(token)
+    if payload is None:
+        raise HTTPException(status_code=401, detail="Token inválido o expirado")
+    return payload  # { "sub": "3", "role": "user", "exp": ... }
+ 
+ 
+def get_current_admin(credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme)) -> dict:
+    """
+    Dependencia para endpoints que requieren rol de administrador.
+    Llama a get_current_user y además verifica el rol.
+    """
+    token = credentials.credentials
+    payload = verify_token(token)
+    if payload is None:
+        raise HTTPException(status_code=401, detail="Token inválido o expirado")
+    if payload.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="No tienes permisos de administrador")
+    return payload
+ 
+ 
 
 # ── Carpeta de imágenes ────────────────────────────────────
 IMG_FOLDER = "src/img_place"
@@ -61,35 +107,80 @@ def create_user(user: user_schema):
         session.refresh(db_user)
         return db_user
 
-@app.post("/login/", tags=['usuario'])
+@app.post("/login/", response_model=token_schema, tags=['usuario'])
 def login(login_user: login_schema):
-    name_admit = "ADMIT_2026"
-    contraseña_admit = "123ABC" 
+    """
+    Verifica credenciales y devuelve un JWT.
+    El token incluye el ID del usuario y su rol en el PAYLOAD.
+    """
+    ADMIN_NAME = "ADMIT_2026"
+    ADMIN_PASS = "123ABC"
+ 
+    # ── Caso admin hardcodeado ────────────────────────────────
+    if login_user.NAME == ADMIN_NAME and login_user.PASSWORD == ADMIN_PASS:
+        token = create_access_token({
+            "sub": "0",       # ID 0 = admin (convención tuya)
+            "role": "admin"   # rol que usaremos para proteger rutas
+        })
+        return {"access_token": token, "token_type": "bearer", "user_id": 0, "role": "admin"}
+ 
+    # ── Caso usuario normal ───────────────────────────────────
     with Session(engine) as session:
         statement = select(user_model).where(
             user_model.NAME == login_user.NAME,
             user_model.PASSWORD == login_user.PASSWORD
         )
         user = session.exec(statement).first()
-        if login_user.NAME == name_admit and login_user.PASSWORD == contraseña_admit:
-            return {"status": "success_admit"}
-        elif not user:
-            return {"status": "error", "message": "Credenciales incorrectas"}
-        return {"status": "success", "message": f"Bienvenido {user.NAME}", "user_id": user.ID}
+ 
+        if not user:
+            # 401 = No autorizado (credenciales incorrectas)
+            raise HTTPException(status_code=401, detail="Credenciales incorrectas")
+ 
+        # Creamos el token con el ID y el rol del usuario
+        token = create_access_token({
+            "sub": str(user.ID),   # "sub" = subject (estándar JWT)
+            "role": "user"
+        })
+ 
+        return {
+            "access_token": token,
+            "token_type": "bearer",
+            "user_id": user.ID,
+            "role": "user"
+        }
+ 
+# ── Ejemplo: endpoint PROTEGIDO para usuario normal ──────────
+@app.get("/me/", tags=['usuario'])
+def get_my_info(payload: dict = Depends(get_current_user)):
+    """
+    Solo accesible con un token válido.
+    
+    El parámetro  payload: dict = Depends(get_current_user)
+    hace que FastAPI ejecute get_current_user() automáticamente.
+    Si el token falla → 401 antes de entrar aquí.
+    Si es válido      → payload contiene los datos del token.
+    """
+    user_id = int(payload["sub"])
+    role    = payload["role"]
+    return {"message": f"Hola usuario {user_id}", "tu_rol": role}
         
 
 
 #── ADMIT ─────────────────────────────────────────────────────
 
+# ── Ejemplo: endpoint PROTEGIDO solo para admin ───────────────
 @app.get("/all_user_admit/", tags=['admit'])
-def all_user():
-    with Session(engine) as asssion:
-        querry = select(user_model)
-        result = asssion.exec(querry).all()
+def all_user(payload: dict = Depends(get_current_admin)):
+    """
+    Solo accesible si el token tiene role == "admin".
+    Si el token es de usuario normal → 403 Forbidden.
+    """
+    with Session(engine) as session:
+        result = session.exec(select(user_model)).all()
         if not result:
-            return {"status": "error", "message": "no hay usuarios"}
+            return {"status": "error", "message": "No hay usuarios"}
         return {"status": "success", "data": result}
-
+    
 @app.post("/search_admit/", tags=['admit'])
 def search_user(data: search_admit_schema):
     with Session(engine) as session:
