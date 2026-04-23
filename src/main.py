@@ -30,6 +30,8 @@ from .schema.admit import (
     search_admit_schema,updata_admit_schema,delete_admit_schema
 )
 from .schema.token import token_schema 
+from password import ADMIN_NAME,ADMIN_PASS
+
 
 # Crea todas las tablas al iniciar
 create_all_tables()
@@ -113,8 +115,6 @@ def login(login_user: login_schema):
     Verifica credenciales y devuelve un JWT.
     El token incluye el ID del usuario y su rol en el PAYLOAD.
     """
-    ADMIN_NAME = "ADMIT_2026"
-    ADMIN_PASS = "123ABC"
  
     # ── Caso admin hardcodeado ────────────────────────────────
     if login_user.NAME == ADMIN_NAME and login_user.PASSWORD == ADMIN_PASS:
