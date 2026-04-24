@@ -1,10 +1,10 @@
 /* ─── Config ────────────────────────────────────── */
-const API_BASE = "http://127.0.0.1:8000";
+const API_BASE = "";
 
 /* ─── Auth guard ────────────────────────────────── */
 const USER_ID = parseInt(localStorage.getItem("user_id"));
 if (!USER_ID || !localStorage.getItem("access_token")) {
-    window.location.href = "../html/login.html";
+    window.location.href = "/html/login.html";
 }
 
 /* ─── Mostrar nombre en sidebar ─────────────────── */
@@ -66,7 +66,7 @@ function logout() {
     localStorage.removeItem("user_id");
     localStorage.removeItem("user_name");
     localStorage.removeItem("admit_role");
-    window.location.href = "../html/login.html";
+    window.location.href = "/html/login.html";
 }
 
 /* ─── Status ────────────────────────────────────── */
