@@ -1,10 +1,10 @@
 /* ─── Config ────────────────────────────────────── */
-const API_BASE = "http://127.0.0.1:8000";
+const API_BASE = "";
 
 /* ─── Auth guard ─────────────────────────────────── */
 // Verificamos AMBAS cosas: que exista el rol admin Y el token JWT
 if (localStorage.getItem("admit_role") !== "admin" || !localStorage.getItem("access_token")) {
-    window.location.href = "../html/login.html";
+    window.location.href = "/html/login.html";
 }
 
 /* ─── Estado global ──────────────────────────────── */
