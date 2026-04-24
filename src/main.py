@@ -33,6 +33,10 @@ from .schema.token import token_schema
 from .password import ADMIN_NAME, ADMIN_PASS
 
 
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
+
+
 # Crea todas las tablas al iniciar
 create_all_tables()
 
@@ -51,6 +55,15 @@ app.add_middleware(
 #   Authorization: Bearer <token>
 # y lo pasa como objeto HTTPAuthorizationCredentials.
 bearer_scheme = HTTPBearer()
+
+
+# Sirve todos los archivos estáticos del frontend
+app.mount("/static", StaticFiles(directory="frontend"), name="static")
+
+# Ruta raíz → devuelve index.html
+@app.get("/")
+def root():
+    return FileResponse("frontend/html/index.html")
 
 # ══════════════════════════════════════════════════════════════
 #  DEPENDENCIAS  (funciones que FastAPI inyecta en los endpoints)
