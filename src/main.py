@@ -30,7 +30,7 @@ from .schema.admit import (
     search_admit_schema,updata_admit_schema,delete_admit_schema
 )
 from .schema.token import token_schema 
-from password import ADMIN_NAME,ADMIN_PASS
+from .password import ADMIN_NAME, ADMIN_PASS
 
 
 # Crea todas las tablas al iniciar

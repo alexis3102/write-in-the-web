@@ -80,12 +80,28 @@
                 console.log(result);
 
                 if (response.ok) {
-                    localStorage.setItem("user_id", result.ID);
-                    localStorage.setItem("user_name", "Bienvenido " + result.NAME);
-                    window.location.href = "html/write.html";
+    // Después del registro, hacer login automático
+    const loginResponse = await fetch("http://127.0.0.1:8000/login/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            NAME: data.NAME,
+            PASSWORD: data.PASSWORD
+        })
+    });
 
+    const loginResult = await loginResponse.json();
 
-                } else {
+    if (loginResult.access_token) {
+        localStorage.setItem("access_token", loginResult.access_token);
+        localStorage.setItem("user_id", loginResult.user_id);
+        localStorage.setItem("user_name", result.name || result.NAME || result.user_name);
+        window.location.href = "html/write.html";
+    } else {
+        alert("Cuenta creada, por favor inicia sesión.");
+        window.location.href = "html/login.html";
+    }
+} else {
                     alert("Error: " + JSON.stringify(result));
                 }
 
