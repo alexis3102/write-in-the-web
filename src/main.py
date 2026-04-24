@@ -63,7 +63,7 @@ app.mount("/static", StaticFiles(directory="frontend"), name="static")
 # Ruta raíz → devuelve index.html
 @app.get("/")
 def root():
-    return FileResponse("frontend/html/index.html")
+    return FileResponse("frontend/index.html")  # ← sin /html/
 
 # ══════════════════════════════════════════════════════════════
 #  DEPENDENCIAS  (funciones que FastAPI inyecta en los endpoints)
