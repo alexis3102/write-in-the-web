@@ -200,10 +200,3 @@ FastAPI genera automáticamente la documentación de la API:
 - **Swagger UI:** `http://localhost:8000/docs`
 - **ReDoc:** `http://localhost:8000/redoc`
 
----
-
-## 📝 Notas
-
-- Las contraseñas se almacenan en texto plano actualmente. Se recomienda usar hashing (p. ej. `bcrypt`) antes de pasar a producción.
-- El admin está hardcodeado en `password.py`. Para entornos productivos, se recomienda migrar a variables de entorno con `python-dotenv`.
-- El CORS está configurado con `allow_origins=["*"]`, lo que permite peticiones desde cualquier origen. Restringir esto en producción.
