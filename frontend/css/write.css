@@ -749,3 +749,195 @@ input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
 .editor-publish {
   min-width: 140px;
 }
+
+/* ═══════════════════════════════════════════════════
+   RESPONSIVE MÓVIL — write.css (escritorio)
+═══════════════════════════════════════════════════ */
+
+/* ── Hamburguesa ── */
+.menu-toggle {
+  display: none;
+  position: fixed;
+  top: 14px;
+  left: 14px;
+  z-index: 500;
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  color: var(--amber);
+  font-size: 18px;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.18s;
+}
+.menu-toggle:hover { background: var(--amber-glow); }
+
+.sidebar-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  z-index: 49;
+  backdrop-filter: blur(2px);
+}
+
+@media (max-width: 768px) {
+
+  html, body { overflow: hidden; }
+
+  .menu-toggle { display: flex; }
+
+  /* Sidebar como drawer */
+  .sidebar {
+    position: fixed;
+    top: 0; left: 0;
+    height: 100vh;
+    z-index: 50;
+    transform: translateX(-100%);
+    transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 4px 0 24px rgba(0,0,0,0.6);
+  }
+
+  .sidebar.open { transform: translateX(0); }
+  .sidebar-backdrop.open { display: block; }
+
+  /* Main */
+  .main {
+    width: 100%;
+    overflow-y: auto;
+    min-height: 100vh;
+  }
+
+  /* Topbar */
+  .topbar {
+    padding: 64px 16px 0;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .topbar-title { font-size: 24px; }
+
+  /* Panel genérico */
+  .panel {
+    padding: 20px 16px;
+  }
+
+  /* Grids a 1 columna */
+  .form-grid {
+    grid-template-columns: 1fr;
+    max-width: 100%;
+  }
+
+  .field.full { grid-column: 1; }
+
+  /* Botones */
+  .btn-primary,
+  .btn-danger {
+    width: 100%;
+    min-width: unset;
+    justify-content: space-between;
+  }
+
+  /* Editor de texto */
+  #panel-write-text {
+    height: calc(100dvh - 120px);
+  }
+
+  .editor-wrap {
+    padding: 20px 16px 0;
+  }
+
+  .editor-title {
+    font-size: 26px;
+    padding: 0 0 12px;
+  }
+
+  .editor-body {
+    font-size: 16px;
+    line-height: 1.7;
+  }
+
+  .editor-footer {
+    padding: 10px 0 16px;
+  }
+
+  .editor-publish {
+    min-width: unset;
+  }
+
+  /* Search layout: apila vertical en móvil */
+  .search-layout {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .names-panel {
+    position: static;
+    max-height: 200px;
+  }
+
+  /* Place card: apila imagen arriba */
+  .place-card {
+    flex-direction: column;
+    max-width: 100%;
+  }
+
+  .place-card-img-wrap {
+    width: 100%;
+    min-height: 160px;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .place-card-info {
+    padding: 16px 18px;
+  }
+
+  .place-card-stats {
+    gap: 14px;
+  }
+
+  /* Char card */
+  .char-card {
+    max-width: 100%;
+  }
+
+  /* Text result */
+  .text-result {
+    max-width: 100%;
+  }
+
+  /* Response container */
+  .response-container {
+    margin: 0 16px 24px;
+    max-width: 100%;
+  }
+
+  /* Toast */
+  .toast {
+    left: 16px;
+    right: 28px;
+    bottom: 20px;
+    max-width: calc(100% - 44px);
+    white-space: normal;
+  }
+
+  /* Dropzone más compacto */
+  .dropzone {
+    min-height: 140px;
+  }
+
+  .dropzone-inner {
+    padding: 20px 16px;
+  }
+}
+
+@media (max-width: 380px) {
+  .topbar-title { font-size: 20px; }
+  .editor-title { font-size: 22px; }
+  .panel { padding: 14px 12px; }
+}

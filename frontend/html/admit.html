@@ -13,6 +13,11 @@
   <div class="noise"></div>
   <div class="grid-overlay"></div>
 
+  <!-- Hamburguesa (solo móvil) -->
+  <button class="menu-toggle" id="menu-toggle" aria-label="Abrir menú">☰</button>
+  <!-- Backdrop oscuro -->
+  <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
+
   <!-- ── SIDEBAR ─────────────────────────────────────── -->
   <aside class="sidebar">
     <div class="brand">
@@ -276,5 +281,30 @@
   </main>
 
   <script src="/static/js/admit.js"></script>
+  <script>
+    /* ── Menú hamburguesa móvil ── */
+    const menuToggle   = document.getElementById('menu-toggle');
+    const sidebar      = document.querySelector('.sidebar');
+    const backdrop     = document.getElementById('sidebar-backdrop');
+
+    function openSidebar() {
+      sidebar.classList.add('open');
+      backdrop.classList.add('open');
+    }
+    function closeSidebar() {
+      sidebar.classList.remove('open');
+      backdrop.classList.remove('open');
+    }
+
+    menuToggle.addEventListener('click', openSidebar);
+    backdrop.addEventListener('click', closeSidebar);
+
+    // Cerrar al elegir una vista en móvil
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (window.innerWidth <= 768) closeSidebar();
+      });
+    });
+  </script>
 </body>
 </html>

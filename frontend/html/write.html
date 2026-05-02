@@ -12,6 +12,10 @@
 
   <div class="noise"></div>
 
+  <!-- Hamburguesa (solo móvil) -->
+  <button class="menu-toggle" id="menu-toggle" aria-label="Abrir menú">☰</button>
+  <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
+
   <aside class="sidebar">
     <div class="brand">
       <span class="brand-icon">✦</span>
@@ -455,5 +459,29 @@
   </main>
 
     <script src="/static/js/write.js"></script>
+  <script>
+    /* ── Menú hamburguesa móvil ── */
+    const menuToggle = document.getElementById('menu-toggle');
+    const sidebar    = document.querySelector('.sidebar');
+    const backdrop   = document.getElementById('sidebar-backdrop');
+
+    function openSidebar() {
+      sidebar.classList.add('open');
+      backdrop.classList.add('open');
+    }
+    function closeSidebar() {
+      sidebar.classList.remove('open');
+      backdrop.classList.remove('open');
+    }
+
+    menuToggle.addEventListener('click', openSidebar);
+    backdrop.addEventListener('click', closeSidebar);
+
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (window.innerWidth <= 768) closeSidebar();
+      });
+    });
+  </script>
 </body>
 </html>

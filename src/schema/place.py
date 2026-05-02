@@ -1,8 +1,7 @@
 from sqlmodel import SQLModel
 from typing import Optional
 
-# ── Crear lugar (ahora sin image, la imagen llega por Form en el endpoint) ──
-# Se usa como referencia; el endpoint real usa Form() directamente.
+
 class place_schema(SQLModel):
     name:        str
     description: str

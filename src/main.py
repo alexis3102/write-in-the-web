@@ -199,7 +199,7 @@ def get_my_info(payload: dict = Depends(get_current_user)):
 
 #── ADMIT ─────────────────────────────────────────────────────
 
-# ── Ejemplo: endpoint PROTEGIDO solo para admin ───────────────
+# ── endpoint PROTEGIDO solo para admin ───────────────
 @app.get("/all_user_admit/", tags=['admit'])
 def all_user(payload: dict = Depends(get_current_admin)):
     """

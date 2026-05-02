@@ -177,3 +177,79 @@ button[type="submit"]:hover {
     text-decoration: underline;
     color: rgba(255, 255, 255, 0.8);
 }
+
+/* ═══════════════════════════════════════════════════
+   RESPONSIVE MÓVIL — style.css (login)
+═══════════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+  body {
+    justify-content: center;
+    align-items: flex-end;
+    overflow: hidden;
+  }
+
+  #login {
+    width: 100%;
+    min-width: unset;
+    height: auto;
+    min-height: 60vh;
+    border-radius: 20px 20px 0 0;
+    padding: 32px 0 40px;
+    background-color: rgba(20, 15, 10, 0.92);
+  }
+
+  #elementos-register {
+    width: 85%;
+  }
+
+  #img-perfil {
+    width: 48px;
+    margin-bottom: 10px;
+  }
+
+  #title-register {
+    font-size: 20px;
+    letter-spacing: 3px;
+    margin-bottom: 28px;
+  }
+
+  .campo {
+    height: 48px;
+  }
+
+  .campo input {
+    font-size: 16px; /* evita zoom automático en iOS */
+  }
+
+  button[type="submit"] {
+    padding: 14px 0;
+    font-size: 13px;
+  }
+
+  .social-icons {
+    margin-top: 22px;
+    gap: 18px;
+  }
+
+  .social-icons img {
+    width: 38px;
+    height: 38px;
+    padding: 7px;
+  }
+
+  #register-link {
+    font-size: 12px;
+    margin-top: 14px;
+  }
+}
+
+@media (max-width: 380px) {
+  #elementos-register {
+    width: 90%;
+  }
+
+  #login {
+    min-height: 65vh;
+  }
+}
